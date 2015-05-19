@@ -11,7 +11,7 @@ pruning(train, rules, method = "m2cba")
 
 \item{rules}{data.frame with rules}
 
-\item{method}{pruning method m2cba(default)|m1cba| dcbrcba}
+\item{method}{pruning method m2cba(default)|m1cba|dcbrcba}
 }
 \value{
 data.frame with pruned rules
@@ -31,7 +31,7 @@ rules <- subset( rules, subset = rhs \%pin\% "y=") # filter
 rulesFrame <- as(rules,"data.frame") # convert
 
 print(nrow(rulesFrame))
-prunedRulesFrame <- pruning(trainData, rulesFrame, method="m2cba") # method=m1cba|m2cba|dcbrcba
+prunedRulesFrame <- pruning(trainData, rulesFrame, method="m2cba")
 print(nrow(prunedRulesFrame))
 }
 

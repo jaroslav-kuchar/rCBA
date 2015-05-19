@@ -19,7 +19,7 @@ init <- function(){
 	for(conf in confs){
 		.jaddClassPath(paste(path.package("rCBA"), "/java/conf/", conf, sep=""))
 	}
-	.jclassPath()
+	# J("java.lang.System")$getProperty("java.version")		
 }
 
 #' A Pruning function

@@ -11,12 +11,17 @@ Prerequisites:
 
 ### R dependencies installation
 ```R
-install.packages(c("devtools","rJava"),dependencies=TRUE, repos="http://mirrors.nic.cz/R/")
+install.packages(c("devtools","rJava"),dependencies=TRUE, repos="http://cran.us.r-project.org")
 ```
 
 ### Reconfiguration of Java in R
 ```bash
 sudo R CMD javareconf
+```
+
+### Recompile and reinstall rJava
+```R
+install.packages('rJava', type='source', dependencies=TRUE, repos="http://cran.us.r-project.org")
 ```
 
 ### rCBA installation
