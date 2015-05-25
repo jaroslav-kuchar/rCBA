@@ -50,14 +50,14 @@ pruning <- function(train, rules, method="m2cba"){
 	jPruning <- J("cz.jkuchar.rcba.r.RSpring")$initializePruning()
 	# set column names
 	.jcall(jPruning, , "setColumns", .jarray(colnames(train)))
-	# add rules
-	for (i in 1:nrow(rules)){
-		.jcall(jPruning, , "addRule", as.character(rules[i,]$rules), as.numeric(rules[i,]$confidence), as.numeric(rules[i,]$support))
-	}
 	# add train items
 	trainConverted <- data.frame(lapply(train, as.character), stringsAsFactors=FALSE)
 	for(i in 1:nrow(trainConverted)){
 		.jcall(jPruning, , "addItem", as.character(unname(unlist(trainConverted[i,]))))
+	}
+	# add rules
+	for (i in 1:nrow(rules)){
+		.jcall(jPruning, , "addRule", as.character(rules[i,]$rules), as.numeric(rules[i,]$confidence), as.numeric(rules[i,]$support))
 	}
 	# perform pruning
 	jPruned <- .jcall(jPruning, "[Lcz/jkuchar/rcba/rules/Rule;", "prune", as.character(method))
