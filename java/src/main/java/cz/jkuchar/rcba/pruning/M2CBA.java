@@ -29,7 +29,7 @@ import cz.jkuchar.rcba.rules.RuleEngine;
 @Component
 @Scope("prototype")
 public class M2CBA implements Pruning {
-	
+
 	Logger logger = Logger.getLogger(M2CBA.class.getName());
 
 	@Autowired
@@ -58,15 +58,22 @@ public class M2CBA implements Pruning {
 		// stages
 		long startTime = System.nanoTime();
 		stage1(rules, train);
-		logger.debug("Stage1: "+(System.nanoTime()-startTime)/1000000+" ms");
+		logger.debug("Stage1: " + (System.nanoTime() - startTime) / 1000000
+				+ " ms");
 		stage2(rules, train);
-		logger.debug("Stage2: "+(System.nanoTime()-startTime)/1000000+" ms");
+		logger.debug("Stage2: " + (System.nanoTime() - startTime) / 1000000
+				+ " ms");
 		stage3(rules, train);
-		logger.debug("Stage3: "+(System.nanoTime()-startTime)/1000000+" ms");
+		logger.debug("Stage3: " + (System.nanoTime() - startTime) / 1000000
+				+ " ms");
 
 		// debug print
-		 C.stream().forEach(rule ->
-		 logger.debug(rule.getText()+", "+rule.getConfidence()+", "+rule.getSupport()+", "+rule.isMarked()+", "+(rule.getDefaultError()+rule.getRuleError())+", "+rule.getClassCasesCovered()));
+		C.stream().forEach(
+				rule -> logger.debug(rule.getText() + ", "
+						+ rule.getConfidence() + ", " + rule.getSupport()
+						+ ", " + rule.isMarked() + ", "
+						+ (rule.getDefaultError() + rule.getRuleError()) + ", "
+						+ rule.getClassCasesCovered()));
 
 		return C;
 	}
@@ -75,82 +82,93 @@ public class M2CBA implements Pruning {
 	 * STAGE 1
 	 */
 	private void stage1(List<Rule> rules, List<Item> train) {
-			
+
 		IntStream
 				.range(0, train.size())
 				.parallel()
-				.forEach(did -> {
-					Item item = train.get(did);
-					String itemClassValue = item.get(className);
+				.forEach(
+						did -> {
+							Item item = train.get(did);
+							String itemClassValue = item.get(className);
 
-						OptionalInt cRule = IntStream
-								.range(0, rules.size())
-								.filter(rid -> rules.get(rid).getCons()
-										.get(className).iterator().next()
-										.equals(itemClassValue))
-								.filter(rid -> re.matchRule(rules.get(rid),
-										item)).min();
-						OptionalInt wRule = IntStream
-								.range(0, rules.size())
-								.filter(rid -> !rules.get(rid).getCons()
-										.get(className).iterator().next()
-										.equals(itemClassValue))
-								.filter(rid -> re.matchRule(rules.get(rid),
-										item)).min();
-						if (cRule.isPresent()) {
-							if (!U.contains(cRule.getAsInt())) {
-								U.add(cRule.getAsInt());
-							}
-							rules.get(cRule.getAsInt()).incClassCasesCovered(
-									itemClassValue);
+							OptionalInt cRule = OptionalInt.empty();
+							OptionalInt wRule = OptionalInt.empty();
 
-							if (!wRule.isPresent()
-									|| (wRule.isPresent() && cRule.getAsInt() < wRule
-											.getAsInt())) {
-								if (!Q.contains(cRule.getAsInt())) {
-									Q.add(cRule.getAsInt());
-								}
-								rules.get(cRule.getAsInt()).mark();
-							} else {
-								Tuple t = new Tuple(did, itemClassValue, cRule
-										.getAsInt(), wRule.getAsInt());
-								if (!A.contains(t)) {
-									A.add(t);
+							for (int rid = 0; rid < rules.size(); rid++) {
+								if (re.matchRule(rules.get(rid), item)) {
+									if (!cRule.isPresent() && rules.get(rid).getCons().get(className)
+											.iterator().next()
+											.equals(itemClassValue)) {
+										cRule = OptionalInt.of(rid);
+									} 
+									if (!wRule.isPresent() && !rules.get(rid).getCons().get(className)
+											.iterator().next()
+											.equals(itemClassValue)) {
+										wRule = OptionalInt.of(rid);
+									}
+									if (cRule.isPresent() && wRule.isPresent()){
+										break;
+									}
 								}
 							}
-						}
-					});
+
+							if (cRule.isPresent()) {
+								if (!U.contains(cRule.getAsInt())) {
+									U.add(cRule.getAsInt());
+								}
+								rules.get(cRule.getAsInt())
+										.incClassCasesCovered(itemClassValue);
+
+								if (!wRule.isPresent()
+										|| (wRule.isPresent() && cRule
+												.getAsInt() < wRule.getAsInt())) {
+									if (!Q.contains(cRule.getAsInt())) {
+										Q.add(cRule.getAsInt());
+									}
+									rules.get(cRule.getAsInt()).mark();
+								} else {
+									Tuple t = new Tuple(did, itemClassValue,
+											cRule.getAsInt(), wRule.getAsInt());
+									if (!A.contains(t)) {
+										A.add(t);
+									}
+								}
+							}
+						});
 	}
 
 	/*
 	 * STAGE 2
 	 */
 	private void stage2(List<Rule> rules, List<Item> train) {
-		A.stream().forEach(tuple -> {
-			if (rules.get(tuple.wRule).isMarked()) {
-				rules.get(tuple.cRule).decClassCasesCovered(tuple.dclass);
-				rules.get(tuple.wRule).incClassCasesCovered(tuple.dclass);
-			} else {
-				List<Integer> wSet = U
-						.stream()
-						.filter(rid -> rid < tuple.cRule && rid > tuple.wRule)
-						.collect(Collectors.toList())
-						.stream()
-						.filter(rid -> re.matchRule(rules.get(rid),
-								train.get(tuple.did)))
-						.collect(Collectors.toList());
-				for (int w : wSet) {
-					rules.get(w)
-							.addReplace(
+		A.stream().forEach(
+				tuple -> {
+					if (rules.get(tuple.wRule).isMarked()) {
+						rules.get(tuple.cRule).decClassCasesCovered(
+								tuple.dclass);
+						rules.get(tuple.wRule).incClassCasesCovered(
+								tuple.dclass);
+					} else {
+						List<Integer> wSet = U
+								.stream()
+								.filter(rid -> rid < tuple.cRule
+										&& rid > tuple.wRule)
+								.collect(Collectors.toList())
+								.stream()
+								.filter(rid -> re.matchRule(rules.get(rid),
+										train.get(tuple.did)))
+								.collect(Collectors.toList());
+						for (int w : wSet) {
+							rules.get(w).addReplace(
 									new Tuple(tuple.did, tuple.dclass,
 											tuple.cRule, -1));
-					rules.get(w).incClassCasesCovered(tuple.dclass);
-					if (!Q.contains(w)) {
-						Q.add(w);
+							rules.get(w).incClassCasesCovered(tuple.dclass);
+							if (!Q.contains(w)) {
+								Q.add(w);
+							}
+						}
 					}
-				}
-			}
-		});
+				});
 	}
 
 	private void stage3(List<Rule> rules, List<Item> train) {
@@ -226,17 +244,18 @@ public class M2CBA implements Pruning {
 		Collections.sort(C);
 		if (C.size() > 0 && C.get(C.size() - 1).getDefaultRule() != null) {
 			C.add(C.get(C.size() - 1).getDefaultRule());
-			
-			Rule dRule = C.get(C.size()-1);			
-			String className = dRule.getCons().keySet().iterator().next();			
-			long count = IntStream.range(0, train.size()).parallel()
+
+			Rule dRule = C.get(C.size() - 1);
+			String className = dRule.getCons().keySet().iterator().next();
+			long count = IntStream
+					.range(0, train.size())
+					.parallel()
 					.filter(item -> dRule.getCons().get(className).iterator()
 							.next().equals(train.get(item).get(className)))
-					.count();						
-			dRule.setConfidence(count/(double)train.size());
-			dRule.setSupport(count/(double)train.size());
-			
-			
+					.count();
+			dRule.setConfidence(count / (double) train.size());
+			dRule.setSupport(count / (double) train.size());
+
 		}
 	}
 

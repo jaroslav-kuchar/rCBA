@@ -38,7 +38,7 @@ public class RuleEngine {
 		return null;
 	}
 
-	public boolean matchRule(Rule rule, Item item) {
+	public boolean matchRule(Rule rule, Item item) {		
 		for (String partAnt : rule.getAnt().keySet()) {
 			if (item.containsKey(partAnt)
 					&& rule.getAnt().get(partAnt).contains(item.get(partAnt))) {

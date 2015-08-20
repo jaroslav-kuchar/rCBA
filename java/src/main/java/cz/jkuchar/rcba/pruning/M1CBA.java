@@ -45,7 +45,7 @@ public class M1CBA implements Pruning {
 					.stream()
 					.parallel()
 					.filter(item -> rule.getCons().get(className).iterator()
-							.next().equals(train.get(item).get(className)))
+                                                        .next().equals(train.get(item).get(className)))
 					.collect(Collectors.toList());
 
 			if (marked.size() > 0) {
@@ -102,7 +102,7 @@ public class M1CBA implements Pruning {
 			String className = dRule.getCons().keySet().iterator().next();			
 			long count = IntStream.range(0, train.size()).parallel()
 					.filter(item -> dRule.getCons().get(className).iterator()
-							.next().equals(train.get(item).get(className)))
+                                                        .next().equals(train.get(item).get(className)))
 					.count();						
 			dRule.setConfidence(count/(double)train.size());
 			dRule.setSupport(count/(double)train.size());

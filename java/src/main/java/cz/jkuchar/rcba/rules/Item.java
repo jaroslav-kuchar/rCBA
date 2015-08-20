@@ -1,6 +1,8 @@
 package cz.jkuchar.rcba.rules;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
@@ -22,6 +24,10 @@ public class Item {
 
 	public boolean containsKey(String key) {
 		return this.memory.containsKey(key);
+	}
+	
+	public boolean containsAll(Collection<String> in){
+		return this.memory.keySet().containsAll(in);
 	}
 
 	public String get(String key) {
