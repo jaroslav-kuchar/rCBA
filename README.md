@@ -44,7 +44,7 @@ rules <- subset( rules, subset = rhs %pin% "y=") # filter
 rulesFrame <- as(rules,"data.frame") # convert
 
 print(nrow(rulesFrame))
-prunedRulesFrame <- pruning(trainData, rulesFrame, method="m2cba") # m2cba(default)|m1cba|dcbrcba
+prunedRulesFrame <- pruning(train, rulesFrame, method="m2cba") # m2cba(default)|m1cba|dcbrcba
 print(nrow(prunedRulesFrame))
 ```
 ## Contributors
