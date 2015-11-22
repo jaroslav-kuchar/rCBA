@@ -33,8 +33,8 @@ public class Rule implements Comparable<Rule> {
 	private List<Tuple> replaces = new ArrayList<Tuple>();
 	private Map<String, Integer> classCasesCovered = new HashMap<String, Integer>();
 
-	private Map<String, Set<String>> antecendent = new HashMap<String, Set<String>>();
-	private Map<String, Set<String>> consequent = new HashMap<String, Set<String>>();
+	private Map<String, String> antecendent = new HashMap<String, String>();
+	private Map<String, String> consequent = new HashMap<String, String>();
 
 	private Rule() {
 		super();
@@ -52,11 +52,11 @@ public class Rule implements Comparable<Rule> {
 		return support;
 	}
 
-	public Map<String, Set<String>> getAnt() {
+	public Map<String, String> getAnt() {
 		return antecendent;
 	}
 
-	public Map<String, Set<String>> getCons() {
+	public Map<String, String> getCons() {
 		return consequent;
 	}
 
@@ -95,11 +95,11 @@ public class Rule implements Comparable<Rule> {
 		}
 	}
 
-	private Map<String, Set<String>> parsePart(String part,
+	private Map<String, String> parsePart(String part,
 			Map<String, Set<String>> meta) {
 		// remove {}
 		part = part.substring(1, part.length() - 1);
-		Map<String, Set<String>> out = new HashMap<String, Set<String>>();
+		Map<String, String> out = new HashMap<String, String>();
 		
 		for (int i = 0; i < meta.keySet().size(); i++) {
 			for (String key : meta.keySet()) {
@@ -107,8 +107,8 @@ public class Rule implements Comparable<Rule> {
 					for (String val : meta.get(key)) {
 						if (part.startsWith(key + "=" + val + ",")
 								|| part.equals(key + "=" + val)) {
-							out.put(key,
-									new HashSet<String>(Arrays.asList(val)));
+							out.put(key,val);
+
 							int subIndex = (key + "=" + val + ",").length();
 							if(subIndex<part.length()){
 								part = part.substring(subIndex);
@@ -125,10 +125,10 @@ public class Rule implements Comparable<Rule> {
 		return out;
 	}
 
-	private Map<String, Set<String>> parsePart(String part) {
+	private Map<String, String> parsePart(String part) {
 		// remove {}
 		part = part.substring(1, part.length() - 1);
-		Map<String, Set<String>> out = new HashMap<String, Set<String>>();
+		Map<String, String> out = new HashMap<String, String>();
 		String[] attrs = part.split(",");
 		for (String attr : attrs) {
 			Pattern pattern = Pattern.compile("(.*)=(.*)");
@@ -138,7 +138,7 @@ public class Rule implements Comparable<Rule> {
 				for (String pp : matcher.group(2).split(",")) {
 					p.add(pp);
 				}
-				out.put(matcher.group(1), p);
+				out.put(matcher.group(1), p.iterator().next());
 			} else if (attr != null && attr.length() > 0) {
 				throw new BadRuleFormatException(
 						"Wrong formattting of rule items " + attr);
@@ -183,6 +183,13 @@ public class Rule implements Comparable<Rule> {
 			classCasesCovered.put(className, 0);
 		}
 		classCasesCovered.put(className, classCasesCovered.get(className) - 1);
+	}
+	
+	public void setClassCasesCovered(String className, int value) {
+		if (!this.classCasesCovered.containsKey(className)) {
+			classCasesCovered.put(className, 0);
+		}
+		classCasesCovered.put(className, value);
 	}
 
 	public Map<String, Integer> getClassCasesCovered() {

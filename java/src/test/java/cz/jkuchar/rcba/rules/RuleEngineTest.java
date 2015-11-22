@@ -45,7 +45,7 @@ public class RuleEngineTest {
 		item.put("a", "b");
 		Rule result = re.getTopMatch(item);
 		Assert.assertNotNull(result);
-		Assert.assertEquals(result.getCons().get("y").iterator().next(),"1");
+		Assert.assertEquals(result.getCons().get("y"),"1");
 	}
 	
 	@Test

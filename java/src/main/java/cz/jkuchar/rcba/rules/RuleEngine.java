@@ -3,6 +3,8 @@ package cz.jkuchar.rcba.rules;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -39,13 +41,11 @@ public class RuleEngine {
 	}
 
 	public boolean matchRule(Rule rule, Item item) {		
-		for (String partAnt : rule.getAnt().keySet()) {
-			if (item.containsKey(partAnt)
-					&& rule.getAnt().get(partAnt).contains(item.get(partAnt))) {
-				// match = true;
-			} else {
+//		return item.containsAllEntries(rule.getAnt().entrySet());
+		for (Entry<String, String> entry : rule.getAnt().entrySet()) {
+			if (!entry.getValue().equals(item.get(entry.getKey()))) {
 				return false;
-			}
+			} 
 		}
 		return true;
 	}

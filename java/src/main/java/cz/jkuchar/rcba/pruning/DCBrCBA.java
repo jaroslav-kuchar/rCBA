@@ -29,7 +29,7 @@ public class DCBrCBA implements Pruning {
 					.range(0, train.size())
 					.parallel()
 					.filter(item -> re.matchRule(rule, train.get(item))
-							&& rule.getCons().get(className).iterator().next()
+							&& rule.getCons().get(className)
 									.equals(train.get(item).get(className)))
 					.boxed().collect(Collectors.toList());
 

@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
@@ -28,6 +30,10 @@ public class Item {
 	
 	public boolean containsAll(Collection<String> in){
 		return this.memory.keySet().containsAll(in);
+	}
+	
+	public boolean containsAllEntries(Set<Entry<String,String>> set){
+		return this.memory.entrySet().containsAll(set);
 	}
 
 	public String get(String key) {
