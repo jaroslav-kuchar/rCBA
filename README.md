@@ -2,6 +2,16 @@
 
 CBA classifier for R
 
+If you publish research that uses rCBA, please cite:
+```bib
+@inproceedings{Kuchar:2015:EasyMiner,
+  author    = {Stanislav Vojir and Vaclav Zeman and Jaroslav Kuchar and Tomas Kliegr},
+  title     = {EasyMiner/R Preview: Towards a Web Interface for Association Rule Learning and Classification in R},
+  booktitle = {Proceedings of the RuleML 2015 Challenge, the Special Track on Rule-based Recommender Systems for the Web of Data, the Special Industry Track and the RuleML 2015 Doctoral Consortium hosted by the 9th International Web Rule Symposium (RuleML 2015), Berlin, Germany, August 2-5, 2015.},
+  year      = {2015}
+}
+```
+
 ## Installation
 
 Prerequisites:
