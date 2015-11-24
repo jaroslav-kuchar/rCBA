@@ -279,7 +279,7 @@ public class M2CBA implements Pruning {
 			double tmp = count / (double) train.size();
 			dRule.setConfidence(tmp);
 			dRule.setSupport(tmp);
-			dRule.setLift(count / ((double) train.size() * tmp));
+			dRule.setLift(1);
 
 		}
 	}
