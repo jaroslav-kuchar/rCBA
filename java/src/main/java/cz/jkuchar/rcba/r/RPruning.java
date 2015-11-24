@@ -61,8 +61,8 @@ public class RPruning {
 		this.items.add(item);
 	}
 
-	public void addRule(String rule, double confidence, double support) {
-		this.rules.add(Rule.buildRule(rule, this.cache, confidence, support));
+	public void addRule(String rule, double confidence, double support, double lift) {
+		this.rules.add(Rule.buildRule(rule, this.cache, confidence, support, lift));
 	}
 
 	public Rule[] prune(String method) {

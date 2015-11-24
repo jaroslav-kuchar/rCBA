@@ -3,8 +3,11 @@ Title: CBA classifier for R
 Version: 0.0.0.9001
 Authors@R: person("Jaroslav", "Kuchar", email = "jaroslav.kuchar@gmail.com", role = c("aut", "cre"))
 Description: What the package does (one paragraph)
-Depends: R (>= 3.1.3)
+Depends:
+    R (>= 3.1.3)
 License: What license is it under?
 LazyData: true
-Imports: rJava
+Imports:
+    rJava
 SystemRequirements: Java (>= 8.0)
+RoxygenNote: 5.0.1

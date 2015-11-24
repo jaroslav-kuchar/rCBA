@@ -57,14 +57,17 @@ pruning <- function(train, rules, method="m2cba"){
 	}
 	# add rules
 	for (i in 1:nrow(rules)){
-		.jcall(jPruning, , "addRule", as.character(rules[i,]$rules), as.numeric(rules[i,]$confidence), as.numeric(rules[i,]$support))
+		.jcall(jPruning, , "addRule", as.character(rules[i,]$rules), as.numeric(rules[i,]$confidence), as.numeric(rules[i,]$support), as.numeric(rules[i,]$lift))
 	}
 	# perform pruning
 	jPruned <- .jcall(jPruning, "[Lcz/jkuchar/rcba/rules/Rule;", "prune", as.character(method))
 	# build dataframe
 	pruned <- data.frame(rules=rep("", 0), support=rep(0.0, 0), confidence=rep(0.0, 0), lift=rep(0.0, 0), stringsAsFactors=FALSE) 
 	for(jRule in jPruned){
-		pruned[nrow(pruned) + 1,] <- c(.jcall(jRule, "S", "getText"), .jcall(jRule, "D", "getSupport"), .jcall(jRule, "D", "getConfidence"), 0.0)
+		pruned[nrow(pruned) + 1,] <- c(.jcall(jRule, "S", "getText"), .jcall(jRule, "D", "getSupport"), .jcall(jRule, "D", "getConfidence"), .jcall(jRule, "D", "getLift"))
 	}
+	pruned$support <- as.double(pruned$support)
+	pruned$confidence <- as.double(pruned$confidence)
+	pruned$lift <- as.double(pruned$lift)
 	pruned
 }

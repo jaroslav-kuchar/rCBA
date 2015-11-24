@@ -24,6 +24,7 @@ public class Rule implements Comparable<Rule> {
 	// confidence + support
 	private double confidence;
 	private double support;
+	private double lift;
 
 	private double ruleError;
 	private double defaultError;
@@ -51,6 +52,10 @@ public class Rule implements Comparable<Rule> {
 	public double getSupport() {
 		return support;
 	}
+	
+	public double getLift() {
+		return lift;
+	}
 
 	public Map<String, String> getAnt() {
 		return antecendent;
@@ -62,16 +67,22 @@ public class Rule implements Comparable<Rule> {
 
 	public static Rule buildRule(String text, Map<String, Set<String>> meta,
 			double confidence, double support) {
+		return buildRule(text, meta, confidence, support, 0);
+	}
+	
+	public static Rule buildRule(String text, Map<String, Set<String>> meta,
+			double confidence, double support, double lift) {
 		Rule out = new Rule();
 		out.text = text;
 		out.confidence = confidence;
 		out.support = support;
+		out.lift = lift;
 		out.parse(meta);
 		return out;
 	}
 
 	public static Rule buildRule(String text, double confidence, double support) {
-		return buildRule(text, null, confidence, support);
+		return buildRule(text, null, confidence, support, 0);
 	}
 
 	private void parse(Map<String, Set<String>> meta) {
