@@ -236,6 +236,10 @@ public class Rule implements Comparable<Rule> {
 	public void setSupport(double support) {
 		this.support = support;
 	}
+	
+	public void setLift(double lift) {
+		this.lift = lift;
+	}
 
 	@Override
 	public String toString() {

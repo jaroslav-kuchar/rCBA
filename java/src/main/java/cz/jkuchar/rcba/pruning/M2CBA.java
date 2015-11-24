@@ -276,8 +276,10 @@ public class M2CBA implements Pruning {
 			String className = dRule.getCons().keySet().iterator().next();
 			long count = IntStream.range(0, train.size()).parallel()
 					.filter(item -> dRule.getCons().get(className).equals(train.get(item).get(className))).count();
-			dRule.setConfidence(count / (double) train.size());
-			dRule.setSupport(count / (double) train.size());
+			double tmp = count / (double) train.size();
+			dRule.setConfidence(tmp);
+			dRule.setSupport(tmp);
+			dRule.setLift(count / ((double) train.size() * tmp));
 
 		}
 	}
