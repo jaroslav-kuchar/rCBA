@@ -59,7 +59,7 @@ pruning <- function(train, rules, method="m2cba"){
 	# 	.jcall(jPruning, , "addItem", as.character(unname(unlist(trainConverted[i,]))))
 	# }
 	.jcall(jPruning, , "loadFromFile", as.character(f))
-	print(paste(Sys.time()," rCBA: dataframe ",nrow(trainConverted),"x",ncol(trainConverted),sep=""))
+	print(paste(Sys.time()," rCBA: dataframe ",nrow(train),"x",ncol(train),sep=""))
 	# add rules
 	for (i in 1:nrow(rules)){
 		.jcall(jPruning, , "addRule", as.character(rules[i,]$rules), as.numeric(rules[i,]$confidence), as.numeric(rules[i,]$support), as.numeric(rules[i,]$lift))
