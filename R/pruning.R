@@ -46,6 +46,7 @@ init <- function(){
 pruning <- function(train, rules, method="m2cba"){
 	# init java
 	init()
+	print(paste(Sys.time()," rCBA: initialized",sep=""))
 	# init interface
 	jPruning <- J("cz.jkuchar.rcba.r.RSpring")$initializePruning()
 	# set column names
@@ -55,17 +56,21 @@ pruning <- function(train, rules, method="m2cba"){
 	for(i in 1:nrow(trainConverted)){
 		.jcall(jPruning, , "addItem", as.character(unname(unlist(trainConverted[i,]))))
 	}
+	print(paste(Sys.time()," rCBA: dataframe ",nrow(trainConverted),"x",ncol(trainConverted),sep=""))
 	# add rules
 	for (i in 1:nrow(rules)){
 		.jcall(jPruning, , "addRule", as.character(rules[i,]$rules), as.numeric(rules[i,]$confidence), as.numeric(rules[i,]$support), as.numeric(rules[i,]$lift))
 	}
+	print(paste(Sys.time()," rCBA: rules ",nrow(rules),"x",ncol(rules),sep=""))
 	# perform pruning
 	jPruned <- .jcall(jPruning, "[Lcz/jkuchar/rcba/rules/Rule;", "prune", as.character(method))
+	print(paste(Sys.time()," rCBA: pruning completed",sep=""))
 	# build dataframe
 	pruned <- data.frame(rules=rep("", 0), support=rep(0.0, 0), confidence=rep(0.0, 0), lift=rep(0.0, 0), stringsAsFactors=FALSE) 
 	for(jRule in jPruned){
 		pruned[nrow(pruned) + 1,] <- c(.jcall(jRule, "S", "getText"), .jcall(jRule, "D", "getSupport"), .jcall(jRule, "D", "getConfidence"), .jcall(jRule, "D", "getLift"))
 	}
+	print(paste(Sys.time()," rCBA: pruned rules ",nrow(pruned),"x",ncol(pruned),sep=""))
 	pruned$support <- as.double(pruned$support)
 	pruned$confidence <- as.double(pruned$confidence)
 	pruned$lift <- as.double(pruned$lift)
