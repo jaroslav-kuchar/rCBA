@@ -54,11 +54,11 @@ pruning <- function(train, rules, method="m2cba"){
 	# add train items
 	f<-tempfile()
 	write.table(train, file=f, sep=",", row.names=FALSE, col.names=FALSE)
-	# trainConverted <- data.frame(lapply(train, as.character), stringsAsFactors=FALSE)
-	# for(i in 1:nrow(trainConverted)){
-	# 	.jcall(jPruning, , "addItem", as.character(unname(unlist(trainConverted[i,]))))
-	# }
-	.jcall(jPruning, , "loadFromFile", as.character(f))
+	trainConverted <- data.frame(lapply(train, as.character), stringsAsFactors=FALSE)
+	for(i in 1:nrow(trainConverted)){
+		.jcall(jPruning, , "addItem", as.character(unname(unlist(trainConverted[i,]))))
+	}
+	# .jcall(jPruning, , "loadFromFile", as.character(f))
 	print(paste(Sys.time()," rCBA: dataframe ",nrow(train),"x",ncol(train),sep=""))
 	# add rules
 	for (i in 1:nrow(rules)){
