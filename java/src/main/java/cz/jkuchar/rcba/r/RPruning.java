@@ -71,7 +71,6 @@ public class RPruning {
 			item.put(cNames[i], values[i]);
 			this.cache.get(cNames[i]).add(values[i]);
 		}
-		System.out.println(item);
 		this.items.add(item);
 	}
 
@@ -80,6 +79,7 @@ public class RPruning {
 	}
 
 	public Rule[] prune(String method) {
+		System.out.println("Pruning started...");
 		Pruning pruning;
 		switch (method) {
 		case "dcbrcba":
@@ -93,6 +93,7 @@ public class RPruning {
 			break;
 		}
 		List<Rule> results = pruning.prune(rules, items);
+		System.out.println("Pruning completed: "+rules.size()+"->"+results.size());
 		return results.toArray(new Rule[results.size()]);
 	}
 
