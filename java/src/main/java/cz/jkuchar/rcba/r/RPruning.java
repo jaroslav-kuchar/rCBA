@@ -59,7 +59,7 @@ public class RPruning {
 	public void loadItemsFromFile(String fileName) {
 		try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
 			String separator = ",";
-			reader.lines().map(line -> line.split(separator + "(?=([^\"]*\"[^\"]*\")*[^\"]*$)"))
+			reader.lines().parallel().map(line -> line.split(separator + "(?=([^\"]*\"[^\"]*\")*[^\"]*$)"))
 					.map(line -> Arrays.asList(line).stream()
 							.map(item -> item.startsWith("\"") ? item.substring(1) : item)
 							.map(item -> item.endsWith("\"") ? item.substring(0, item.length() - 1) : item)
