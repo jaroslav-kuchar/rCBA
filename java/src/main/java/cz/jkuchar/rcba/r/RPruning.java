@@ -62,6 +62,7 @@ public class RPruning {
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
+		System.out.println("Number of imported items: "+this.items.size());
 	}
 
 	public void addItem(String[] values) {
