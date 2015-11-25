@@ -59,7 +59,7 @@ public class RPruning {
 	public void loadFromFile(String fileName) {
 		try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
 			String separator = ",";
-			reader.lines().map(line -> line.split(separator+"(?=([^\"]*\"[^\"]*\")*[^\"]*$)")).map(line -> Arrays.asList(line).stream().map(item -> item.substring(1, item.length())).toArray(String[]::new)).forEach(line -> addItem(line));
+			reader.lines().map(line -> line.split(separator+"(?=([^\"]*\"[^\"]*\")*[^\"]*$)")).map(line -> Arrays.asList(line).stream().map(item -> item.substring(1, item.length()-1)).toArray(String[]::new)).forEach(line -> addItem(line));
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
@@ -72,7 +72,6 @@ public class RPruning {
 			item.put(cNames[i], values[i]);
 			this.cache.get(cNames[i]).add(values[i]);
 		}
-		System.out.println(item);
 		this.items.add(item);
 	}
 
@@ -95,7 +94,6 @@ public class RPruning {
 			break;
 		}
 		try {
-			System.out.println(rules);
 			List<Rule> results = pruning.prune(rules, items);
 			System.out.println("Pruning completed: " + rules.size() + "->" + results.size());
 			return results.toArray(new Rule[results.size()]);
