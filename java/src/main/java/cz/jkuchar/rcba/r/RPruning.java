@@ -1,7 +1,10 @@
 package cz.jkuchar.rcba.r;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -49,6 +52,15 @@ public class RPruning {
 		this.cNames = cNames;
 		for (String cname : cNames) {
 			this.cache.put(cname, new HashSet<String>());
+		}
+	}
+
+	public void loadFromFile(String fileName) {
+		try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+			String separator = ",";
+			reader.lines().map(line -> line.split(separator )).forEach(line -> addItem(line));
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
 		}
 	}
 
