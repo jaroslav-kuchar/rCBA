@@ -56,14 +56,18 @@ public class RPruning {
 		}
 	}
 
-	public void loadFromFile(String fileName) {
+	public void loadItemsFromFile(String fileName) {
 		try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
 			String separator = ",";
-			reader.lines().map(line -> line.split(separator+"(?=([^\"]*\"[^\"]*\")*[^\"]*$)")).map(line -> Arrays.asList(line).stream().map(item -> item.substring(1, item.length()-1)).toArray(String[]::new)).forEach(line -> addItem(line));
+			reader.lines().map(line -> line.split(separator + "(?=([^\"]*\"[^\"]*\")*[^\"]*$)"))
+					.map(line -> Arrays.asList(line).stream()
+							.map(item -> item.startsWith("\"") ? item.substring(1) : item)
+							.map(item -> item.endsWith("\"") ? item.substring(0, item.length() - 1) : item)
+							.toArray(String[]::new))
+					.forEach(line -> addItem(line));
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
-		System.out.println("Number of imported items: " + this.items.size());
 	}
 
 	public void addItem(String[] values) {
@@ -80,7 +84,6 @@ public class RPruning {
 	}
 
 	public Rule[] prune(String method) {
-		System.out.println("Pruning started...");
 		Pruning pruning;
 		switch (method) {
 		case "dcbrcba":
@@ -95,7 +98,6 @@ public class RPruning {
 		}
 		try {
 			List<Rule> results = pruning.prune(rules, items);
-			System.out.println("Pruning completed: " + rules.size() + "->" + results.size());
 			return results.toArray(new Rule[results.size()]);
 		} catch (Exception e) {
 			e.printStackTrace();
