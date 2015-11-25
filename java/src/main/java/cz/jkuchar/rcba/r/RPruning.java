@@ -72,6 +72,7 @@ public class RPruning {
 			item.put(cNames[i], values[i]);
 			this.cache.get(cNames[i]).add(values[i]);
 		}
+		System.out.println(item);
 		this.items.add(item);
 	}
 
