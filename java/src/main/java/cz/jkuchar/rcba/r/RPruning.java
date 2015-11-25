@@ -58,7 +58,7 @@ public class RPruning {
 	public void loadFromFile(String fileName) {
 		try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
 			String separator = ",";
-			reader.lines().map(line -> line.split(separator )).forEach(line -> addItem(line));
+			reader.lines().map(line -> line.split(separator)).forEach(line -> addItem(line));
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
@@ -71,6 +71,7 @@ public class RPruning {
 			item.put(cNames[i], values[i]);
 			this.cache.get(cNames[i]).add(values[i]);
 		}
+		System.out.println(item);
 		this.items.add(item);
 	}
 
