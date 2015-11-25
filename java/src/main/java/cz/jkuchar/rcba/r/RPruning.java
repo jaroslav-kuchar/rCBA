@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -58,7 +59,7 @@ public class RPruning {
 	public void loadFromFile(String fileName) {
 		try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
 			String separator = ",";
-			reader.lines().map(line -> line.split(separator)).forEach(line -> addItem(line));
+			reader.lines().map(line -> line.split(separator+"(?=([^\"]*\"[^\"]*\")*[^\"]*$)")).map(line -> Arrays.asList(line).stream().map(item -> item.substring(1, item.length())).toArray(String[]::new)).forEach(line -> addItem(line));
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
