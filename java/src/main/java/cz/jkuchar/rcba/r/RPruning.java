@@ -93,6 +93,7 @@ public class RPruning {
 			break;
 		}
 		try {
+			System.out.println(rules);
 			List<Rule> results = pruning.prune(rules, items);
 			System.out.println("Pruning completed: " + rules.size() + "->" + results.size());
 			return results.toArray(new Rule[results.size()]);
