@@ -62,7 +62,7 @@ public class RPruning {
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
-		System.out.println("Number of imported items: "+this.items.size());
+		System.out.println("Number of imported items: " + this.items.size());
 	}
 
 	public void addItem(String[] values) {
@@ -92,9 +92,14 @@ public class RPruning {
 			pruning = m2Pruning;
 			break;
 		}
-		List<Rule> results = pruning.prune(rules, items);
-		System.out.println("Pruning completed: "+rules.size()+"->"+results.size());
-		return results.toArray(new Rule[results.size()]);
+		try {
+			List<Rule> results = pruning.prune(rules, items);
+			System.out.println("Pruning completed: " + rules.size() + "->" + results.size());
+			return results.toArray(new Rule[results.size()]);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return (Rule[]) rules.toArray();
 	}
 
 }
