@@ -1,9 +1,10 @@
 # package created using:
 # http://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/
 
+#' @import rJava arules
 init <- function(){
 	# initialize rJava
-	library(rJava)
+	# library(rJava)
 	.jinit()
 	# add java implementation to classpath
 	.jaddClassPath(dir(paste(path.package("rCBA"), "/java/", sep=""), full.names=TRUE))
@@ -32,16 +33,15 @@ init <- function(){
 #' @examples
 #' library("arules")
 #' library("rCBA")
+#' data("AdultUCI")
+#' data("Adult")
 #' 
-#' train <- read.csv("./train.csv",header=TRUE) # read data
-#' 
-#' txns <- as(train,"transactions") # convert
-#' rules <- apriori(txns, parameter = list(confidence = 0.1, support= 0.1, minlen=1, maxlen=5)) # rule mining
-#' rules <- subset( rules, subset = rhs %pin% "y=") # filter
+#' rules <- apriori(Adult, parameter=list(support=0.1, confidence=0.1), 
+#'	appearance = list(rhs=c("sex=Male", "sex=Female"),default="lhs"))
 #' rulesFrame <- as(rules,"data.frame") # convert
 #' 
 #' print(nrow(rulesFrame))
-#' prunedRulesFrame <- pruning(trainData, rulesFrame, method="m2cba")
+#' prunedRulesFrame <- pruning(AdultUCI, rulesFrame, method="m2cba")
 #' print(nrow(prunedRulesFrame))
 pruning <- function(train, rules, method="m2cba"){
 	# init java
@@ -52,12 +52,20 @@ pruning <- function(train, rules, method="m2cba"){
 	# set column names
 	.jcall(jPruning, , "setColumns", .jarray(colnames(train)))
 	# add train items
-	f<-tempfile()
-	write.table(train, file=f, sep=",", row.names=FALSE, col.names=FALSE)
+	
+	# sequence
 	# trainConverted <- data.frame(lapply(train, as.character), stringsAsFactors=FALSE)
 	# for(i in 1:nrow(trainConverted)){
 	# 	.jcall(jPruning, , "addItem", as.character(unname(unlist(trainConverted[i,]))))
 	# }
+
+	# all
+	# trainConverted <- data.frame(lapply(train, as.character), stringsAsFactors=FALSE)
+	# .jcall(jPruning, , "addAll", as.vector(t(trainConverted)))
+	
+	# file
+	f<-tempfile()
+	write.table(train, file=f, sep=",", row.names=FALSE, col.names=FALSE)
 	.jcall(jPruning, , "loadItemsFromFile", as.character(f))
 	print(paste(Sys.time()," rCBA: dataframe ",nrow(train),"x",ncol(train),sep=""))
 	# add rules

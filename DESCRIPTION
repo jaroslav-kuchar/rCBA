@@ -1,13 +1,17 @@
 Package: rCBA
-Title: CBA classifier for R
-Version: 0.0.0.9001
+Title: CBA Classifier for R
+Version: 0.0.1
 Authors@R: person("Jaroslav", "Kuchar", email = "jaroslav.kuchar@gmail.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph)
+Author: Jaroslav Kuchar [aut, cre]
+Maintainer: Jaroslav Kuchar <jaroslav.kuchar@gmail.com>
+URL: https://github.com/jaroslav-kuchar/rCBA
+BugReports: https://github.com/jaroslav-kuchar/rCBA/issues
+Description: CBA classifier for R. Provides implementations of asssociation rule prunining algorithms based on the CBA.
 Depends:
-    R (>= 3.1.3)
-License: What license is it under?
+    R (>= 3.1.3),
+    rJava,
+    arules
+License: Apache License (== 2.0)
 LazyData: true
-Imports:
-    rJava
 SystemRequirements: Java (>= 8.0)
 RoxygenNote: 5.0.1

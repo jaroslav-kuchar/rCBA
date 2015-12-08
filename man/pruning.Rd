@@ -22,16 +22,15 @@ A Pruning function
 \examples{
 library("arules")
 library("rCBA")
+data("AdultUCI")
+data("Adult")
 
-train <- read.csv("./train.csv",header=TRUE) # read data
-
-txns <- as(train,"transactions") # convert
-rules <- apriori(txns, parameter = list(confidence = 0.1, support= 0.1, minlen=1, maxlen=5)) # rule mining
-rules <- subset( rules, subset = rhs \%pin\% "y=") # filter
+rules <- apriori(Adult, parameter=list(support=0.1, confidence=0.1), 
+appearance = list(rhs=c("sex=Male", "sex=Female"),default="lhs"))
 rulesFrame <- as(rules,"data.frame") # convert
 
 print(nrow(rulesFrame))
-prunedRulesFrame <- pruning(trainData, rulesFrame, method="m2cba")
+prunedRulesFrame <- pruning(AdultUCI, rulesFrame, method="m2cba")
 print(nrow(prunedRulesFrame))
 }
 

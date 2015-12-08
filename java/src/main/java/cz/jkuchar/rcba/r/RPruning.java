@@ -70,6 +70,13 @@ public class RPruning {
 		}
 	}
 
+	public void addAll(String[] fullFrame) {
+		int chunk = this.cNames.length;
+		for (int i = 0; i < fullFrame.length; i += chunk) {
+			addItem(Arrays.copyOfRange(fullFrame, i, i + chunk));
+		}
+	}
+
 	public void addItem(String[] values) {
 		Item item = new Item();
 		for (int i = 0; i < cNames.length; i++) {
