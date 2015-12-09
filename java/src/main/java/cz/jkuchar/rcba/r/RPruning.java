@@ -77,7 +77,7 @@ public class RPruning {
 		}
 	}
 
-	public void addItem(String[] values) {
+	public synchronized void addItem(String[] values) {
 		Item item = new Item();
 		for (int i = 0; i < cNames.length; i++) {
 			item.put(cNames[i], values[i]);

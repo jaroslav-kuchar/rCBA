@@ -3,3 +3,4 @@
 export(pruning)
 import(arules)
 import(rJava)
+importFrom(utils,write.table)

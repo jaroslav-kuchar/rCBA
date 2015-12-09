@@ -6,7 +6,7 @@ Author: Jaroslav Kuchar [aut, cre]
 Maintainer: Jaroslav Kuchar <jaroslav.kuchar@gmail.com>
 URL: https://github.com/jaroslav-kuchar/rCBA
 BugReports: https://github.com/jaroslav-kuchar/rCBA/issues
-Description: CBA classifier for R. Provides implementations of association rule pruning algorithms based on the CBA.
+Description: Provides implementations of rule pruning algorithms based on the "Classification Based on Associations" (CBA). It can be used for building classification models from association rules. Rules are pruned in the order of precedence given by the sort criteria and a default rule is added. CBA was originally proposed by Liu, B. Hsu, W. and Ma, Y (1998). Integrating Classification and Association Rule Mining. Proceedings KDD-98, New York, 27-31 August. AAAI. pp80-86.
 Depends:
     R (>= 3.1.3),
     rJava,

@@ -1,6 +1,7 @@
 # package created using:
 # http://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/
 #' @import rJava arules
+#' @importFrom utils write.table
 
 .onLoad <- function(libname, pkgname ){
 	.jinit()
