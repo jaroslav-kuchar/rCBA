@@ -6,7 +6,7 @@ Author: Jaroslav Kuchar [aut, cre]
 Maintainer: Jaroslav Kuchar <jaroslav.kuchar@gmail.com>
 URL: https://github.com/jaroslav-kuchar/rCBA
 BugReports: https://github.com/jaroslav-kuchar/rCBA/issues
-Description: CBA classifier for R. Provides implementations of asssociation rule prunining algorithms based on the CBA.
+Description: CBA classifier for R. Provides implementations of association rule pruning algorithms based on the CBA.
 Depends:
     R (>= 3.1.3),
     rJava,

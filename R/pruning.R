@@ -1,11 +1,21 @@
 # package created using:
 # http://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/
-
 #' @import rJava arules
+
+.onLoad <- function(libname, pkgname ){
+	.jinit()
+	if(J("java.lang.System")$getProperty("java.version") < "1.8.0") {
+		stop("rCBA requires Java >= 1.8 ", call. = FALSE)
+	} 
+}
+
 init <- function(){
 	# initialize rJava
 	# library(rJava)
 	.jinit()
+	if(J("java.lang.System")$getProperty("java.version") < "1.8.0") {
+		stop("rCBA requires Java >= 1.8 ", call. = FALSE)
+	}
 	# add java implementation to classpath
 	.jaddClassPath(dir(paste(path.package("rCBA"), "/java/", sep=""), full.names=TRUE))
 	# add jar archives to classpath
