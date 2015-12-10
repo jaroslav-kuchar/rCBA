@@ -22,15 +22,18 @@ A Pruning function
 \examples{
 library("arules")
 library("rCBA")
-data("AdultUCI")
-data("Adult")
+data("iris")
 
-rules <- apriori(Adult, parameter=list(support=0.1, confidence=0.1), 
-appearance = list(rhs=c("sex=Male", "sex=Female"),default="lhs"))
-rulesFrame <- as(rules,"data.frame") # convert
+train <- sapply(iris,as.factor)
+train <- data.frame(train, check.names=FALSE)
+txns <- as(train,"transactions")
+
+rules = apriori(txns, parameter=list(support=0.03, confidence=0.03, minlen=2), 
+appearance = list(rhs=c("Species=setosa", "Species=versicolor", "Species=virginica"),default="lhs"))
+rulesFrame <- as(rules,"data.frame")
 
 print(nrow(rulesFrame))
-prunedRulesFrame <- pruning(AdultUCI, rulesFrame, method="m2cba")
+prunedRulesFrame <- pruning(train, rulesFrame, method="m2cba")
 print(nrow(prunedRulesFrame))
 }
 
