@@ -22,6 +22,7 @@ import cz.jkuchar.rcba.pruning.M2CBA;
 import cz.jkuchar.rcba.pruning.Pruning;
 import cz.jkuchar.rcba.rules.Item;
 import cz.jkuchar.rcba.rules.Rule;
+import cz.jkuchar.rcba.rules.RuleEngine;
 
 @Component
 @Scope("prototype")
@@ -41,6 +42,9 @@ public class RPruning {
 
 	@Autowired
 	DCBrCBA dcpruning;
+
+	@Autowired
+	private RuleEngine re;
 
 	public RPruning() {
 		this.cNames = new String[1];
@@ -70,6 +74,20 @@ public class RPruning {
 		}
 	}
 
+	public void addDataFrame(Object dataFrame[]) {
+		int columns = dataFrame.length;
+		if (columns > 0) {
+			int rows = ((String[]) dataFrame[0]).length;
+			for (int i = 0; i < rows; i++) {
+				String[] row = new String[columns];
+				for (int j = 0; j < columns; j++) {
+					row[j] = ((String[]) dataFrame[j])[i];
+				}
+				addItem(row);
+			}
+		}
+	}
+
 	public void addAll(String[] fullFrame) {
 		int chunk = this.cNames.length;
 		for (int i = 0; i < fullFrame.length; i += chunk) {
@@ -88,6 +106,17 @@ public class RPruning {
 
 	public void addRule(String rule, double confidence, double support, double lift) {
 		this.rules.add(Rule.buildRule(rule, this.cache, confidence, support, lift));
+	}
+
+	public void addRuleFrame(Object dataFrame[]) {
+		int columns = dataFrame.length;
+		if (columns > 0) {
+			int rows = ((String[]) dataFrame[0]).length;
+			for (int i = 0; i < rows; i++) {
+				addRule(((String[]) dataFrame[0])[i], ((double[]) dataFrame[2])[i], ((double[]) dataFrame[1])[i],
+						((double[]) dataFrame[3])[i]);
+			}
+		}
 	}
 
 	public Rule[] prune(String method) {
@@ -110,6 +139,21 @@ public class RPruning {
 			e.printStackTrace();
 		}
 		return (Rule[]) rules.toArray();
+	}
+
+	public String[] classify() {
+		String[] predictions = new String[this.items.size()];
+		re.addRules(rules);
+		for (int i = 0; i < predictions.length; i++) {
+			Rule tm = re.getTopMatch(this.items.get(i));
+			if (tm == null) {
+				predictions[i] = null;
+			} else {
+				predictions[i] = tm.getCons().values().iterator().next();
+			}
+		}
+		re.clear();
+		return predictions;
 	}
 
 }

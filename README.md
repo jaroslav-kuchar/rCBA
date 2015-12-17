@@ -14,6 +14,16 @@ If you publish research that uses rCBA, please cite:
 
 ## Installation
 
+The package is available in CRAN repository:
+
+- https://cran.r-project.org/web/packages/rCBA/index.html
+
+```R
+install.packages(c("rCBA"),dependencies=TRUE, repos="http://cran.us.r-project.org")
+```
+
+## Development Version Installation
+
 Prerequisites:
 
 - Java 8
@@ -42,6 +52,8 @@ devtools::install_github("jaroslav-kuchar/rCBA")
 
 ## Usage
 
+Example 1 - pruning:
+
 ```R
 library("arules")
 library("rCBA")
@@ -57,6 +69,32 @@ print(nrow(rulesFrame))
 prunedRulesFrame <- pruning(train, rulesFrame, method="m2cba") # m2cba(default)|m1cba|dcbrcba
 print(nrow(prunedRulesFrame))
 ```
+
+Example 2 - classification: 
+
+```
+library("arules")
+library("rCBA")
+data("iris")
+
+train <- sapply(iris,as.factor)
+train <- data.frame(train, check.names=FALSE)
+txns <- as(train,"transactions")
+
+rules = apriori(txns, parameter=list(support=0.03, confidence=0.03, minlen=2), 
+	appearance = list(rhs=c("Species=setosa", "Species=versicolor", "Species=virginica"),default="lhs"))
+rulesFrame <- as(rules,"data.frame")
+
+predictions <- classification(train,rulesFrame)
+table(predictions)
+sum(train$Species==predictions,na.rm=TRUE)/length(predictions)
+
+prunedRulesFrame <- pruning(train, rulesFrame, method="m2cba")
+predictions <- classification(train, prunedRulesFrame)
+table(predictions)
+sum(train$Species==predictions,na.rm=TRUE)/length(predictions)
+```
+
 ## Contributors
 
 - Jaroslav Kuchař (https://github.com/jaroslav-kuchar)

@@ -1,6 +1,6 @@
 Package: rCBA
 Title: CBA Classifier for R
-Version: 0.0.1
+Version: 0.0.1.9009
 Authors@R: person("Jaroslav", "Kuchar", email = "jaroslav.kuchar@gmail.com", role = c("aut", "cre"))
 Author: Jaroslav Kuchar [aut, cre]
 Maintainer: Jaroslav Kuchar <jaroslav.kuchar@gmail.com>
