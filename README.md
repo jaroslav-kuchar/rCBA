@@ -19,7 +19,7 @@ The package is available in CRAN repository:
 - https://cran.r-project.org/web/packages/rCBA/index.html
 
 ```R
-install.packages(c("rCBA"),dependencies=TRUE, repos="http://cran.us.r-project.org")
+install.packages('rCBA',dependencies=TRUE, repos="http://cran.us.r-project.org")
 ```
 
 ## Development Version Installation
@@ -72,7 +72,7 @@ print(nrow(prunedRulesFrame))
 
 Example 2 - classification: 
 
-```
+```R
 library("arules")
 library("rCBA")
 data("iris")
