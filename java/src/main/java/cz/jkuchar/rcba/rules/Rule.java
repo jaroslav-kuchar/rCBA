@@ -97,6 +97,9 @@ public class Rule implements Comparable<Rule> {
 			if (meta != null) {
 				antecendent = parsePart(parts[0], meta);
 				consequent = parsePart(parts[1], meta);
+				if(consequent.size()<=0){
+					consequent = parsePart(parts[1]);
+				}
 			} else {
 				antecendent = parsePart(parts[0]);
 				consequent = parsePart(parts[1]);
