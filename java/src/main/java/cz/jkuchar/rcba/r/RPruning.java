@@ -113,8 +113,14 @@ public class RPruning {
 		if (columns > 0) {
 			int rows = ((String[]) dataFrame[0]).length;
 			for (int i = 0; i < rows; i++) {
-				addRule(((String[]) dataFrame[0])[i], ((double[]) dataFrame[2])[i], ((double[]) dataFrame[1])[i],
-						((double[]) dataFrame[3])[i]);
+				String rule = ((String[]) dataFrame[0])[i];
+				double confidence = (dataFrame[2] instanceof double[]) ? ((double[]) dataFrame[2])[i]
+						: (double) ((int[]) dataFrame[2])[i];
+				double support = (dataFrame[1] instanceof double[]) ? ((double[]) dataFrame[1])[i]
+						: (double) ((int[]) dataFrame[1])[i];
+				double lift = (dataFrame[3] instanceof double[]) ? ((double[]) dataFrame[3])[i]
+						: (double) ((int[]) dataFrame[3])[i];
+				addRule(rule, confidence, support, lift);
 			}
 		}
 	}
