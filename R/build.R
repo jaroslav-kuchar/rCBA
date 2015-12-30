@@ -1,7 +1,7 @@
 #' A build classifier function
 #'
 #' @param trainData data.frame with train data
-#' @param className column with target classes - default last column
+#' @param className column with target class - default is the last column
 #' @param maxRules maximum rules in the build model
 #' @return data.frame with rules
 #' @export
@@ -9,7 +9,7 @@
 #' library("rCBA")
 #' data("iris")
 #' 
-#' train <- sapply(iris,as.factor)
+#' train <- sapply(iris, as.factor)
 #' train <- data.frame(train, check.names=FALSE)
 #' 
 #' model = rCBA::build(train)
@@ -48,7 +48,7 @@ build <- function(trainData, className=NA, maxRules=10000){
 				tempRules <- evalWithTimeout({
 					apriori(txns, parameter = list(confidence = conf, support= supp, minlen=i, maxlen=i))
 				}, timeout=10)
-				tempRules <- subset(tempRules, subset = rhs %pin% "Species=") # filter	
+				tempRules <- subset(tempRules, subset = rhs %pin% paste(className,"=",sep="")) # filter	
 				if (length(rules) > 0) {
 					rules <- union(rules, tempRules)
 				} else {

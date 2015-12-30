@@ -9,7 +9,7 @@
 #' library("rCBA")
 #' data("iris")
 #' 
-#' train <- sapply(iris,as.factor)
+#' train <- sapply(iris, as.factor)
 #' train <- data.frame(train, check.names=FALSE)
 #' txns <- as(train,"transactions")
 #' 

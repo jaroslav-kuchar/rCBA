@@ -61,7 +61,7 @@ data("iris")
 train <- sapply(iris, as.factor)
 train <- data.frame(train, check.names=FALSE)
 
-model = rCBA::build(train)
+model <- rCBA::build(train)
 
 predictions <- rCBA::classification(train, model)
 table(predictions)
