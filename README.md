@@ -1,8 +1,8 @@
 # rCBA
 
-CBA classifier for R
+CBA classifier for R - provides implementations of a classifier based on the "Classification Based on Associations" (CBA). It can be used for building classification models from association rules. Rules are pruned in the order of precedence given by the sort criteria and a default rule is added. The final classifier labels provided instances. CBA was originally proposed by Liu, B. Hsu, W. and Ma, Y (1998). Integrating Classification and Association Rule Mining. Proceedings KDD-98, New York, 27-31 August. AAAI. pp80-86.
 
-If you publish research that uses rCBA, please cite:
+If you publish your research that uses rCBA, please cite:
 ```bib
 @inproceedings{Kuchar:2015:EasyMiner,
   author    = {Stanislav Vojir and Vaclav Zeman and Jaroslav Kuchar and Tomas Kliegr},
@@ -27,24 +27,24 @@ install.packages('rCBA',dependencies=TRUE, repos="http://cran.us.r-project.org")
 Prerequisites:
 
 - Java 8
-- R packages - devtools, rJava
+- R packages - devtools, rJava, R.utils
 
-### R dependencies installation
+R dependencies installation:
 ```R
 install.packages(c("devtools","rJava"),dependencies=TRUE, repos="http://cran.us.r-project.org")
 ```
 
-### Reconfiguration of Java in R
+Reconfiguration of Java in R:
 ```bash
 sudo R CMD javareconf
 ```
 
-### Recompile and reinstall rJava
+Recompile and reinstall rJava:
 ```R
 install.packages('rJava', type='source', dependencies=TRUE, repos="http://cran.us.r-project.org")
 ```
 
-### rCBA installation
+rCBA installation:
 ```R
 library("devtools")
 devtools::install_github("jaroslav-kuchar/rCBA")
@@ -52,7 +52,29 @@ devtools::install_github("jaroslav-kuchar/rCBA")
 
 ## Usage
 
-Example 1 - pruning:
+Example 1 - automatically build model + pruning + classification:
+
+```R
+library("rCBA")
+data("iris")
+
+train <- sapply(iris, as.factor)
+train <- data.frame(train, check.names=FALSE)
+
+model = rCBA::build(train)
+
+predictions <- rCBA::classification(train, model)
+table(predictions)
+sum(train$Species==predictions, na.rm=TRUE) / length(predictions)
+
+prunedModel <- rCBA::pruning(train, model)
+
+predictions <- rCBA::classification(train, prunedModel)
+table(predictions)
+sum(train$Species==predictions, na.rm=TRUE) / length(predictions)
+```
+
+Example 2 - apriori + pruning:
 
 ```R
 library("arules")
@@ -70,7 +92,7 @@ prunedRulesFrame <- pruning(train, rulesFrame, method="m2cba") # m2cba(default)|
 print(nrow(prunedRulesFrame))
 ```
 
-Example 2 - classification: 
+Example 3 - apriori + classification: 
 
 ```R
 library("arules")
