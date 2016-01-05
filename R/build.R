@@ -48,6 +48,9 @@ build <- function(trainData, className=NA, maxRules=10000){
 				tempRules <- evalWithTimeout({
 					apriori(txns, parameter = list(confidence = conf, support= supp, minlen=i, maxlen=i))
 				}, timeout=10)
+				if(is.null(tempRules)){
+					break
+				}
 				tempRules <- subset(tempRules, subset = rhs %pin% paste(className,"=",sep="")) # filter	
 				if (length(rules) > 0) {
 					rules <- union(rules, tempRules)
@@ -57,16 +60,16 @@ build <- function(trainData, className=NA, maxRules=10000){
 				if (length(rules) >= maxRules || length(tempRules)==0) {
 			        break
 			    }    
-			    # gc()
+			    gc()
 			}
-			if (length(rules) >= maxRules) {
+			if (length(rules) >= maxRules || is.null(tempRules)) {
 				break
 			}   
 		}
 	}, TimeoutException = function(e){
-		print(e)
+		print("TimeoutException")
 	}, error = function(e){
-		print(e)
+		print("Error")
 	})
 
 	# convert
