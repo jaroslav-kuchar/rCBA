@@ -9,7 +9,7 @@ build(trainData, className = NA, maxRules = 10000)
 \arguments{
 \item{trainData}{data.frame with train data}
 
-\item{className}{column with target classes - default last column}
+\item{className}{column with target class - default is the last column}
 
 \item{maxRules}{maximum rules in the build model}
 }
@@ -23,7 +23,7 @@ A build classifier function
 library("rCBA")
 data("iris")
 
-train <- sapply(iris,as.factor)
+train <- sapply(iris, as.factor)
 train <- data.frame(train, check.names=FALSE)
 
 model = rCBA::build(train)

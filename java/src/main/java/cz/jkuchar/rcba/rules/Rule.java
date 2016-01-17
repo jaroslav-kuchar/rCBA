@@ -89,20 +89,20 @@ public class Rule implements Comparable<Rule> {
 		if (text != null && text.length() > 0
 				&& text.matches("\\{(.*?)\\}\\s*=>\\s*\\{(.+?)\\}")) {
 
-			String[] parts = text.trim().split("\\s*=>\\s*");
+			String[] parts = text.trim().split("\\}\\s*=>\\s*\\{");
 			if (parts.length != 2) {
 				throw new BadRuleFormatException("Wrong formattting of: "
 						+ text);
 			}
 			if (meta != null) {
-				antecendent = parsePart(parts[0], meta);
-				consequent = parsePart(parts[1], meta);
+				antecendent = parsePart(parts[0].substring(1), meta);
+				consequent = parsePart(parts[1].substring(0, parts[1].length()-1), meta);
 				if(consequent.size()<=0){
-					consequent = parsePart(parts[1]);
+					consequent = parsePart(parts[1].substring(0, parts[1].length()-1));
 				}
 			} else {
-				antecendent = parsePart(parts[0]);
-				consequent = parsePart(parts[1]);
+				antecendent = parsePart(parts[0].substring(1));
+				consequent = parsePart(parts[1].substring(0, parts[1].length()-1));
 			}
 		} else {
 			throw new BadRuleFormatException("Wrong formattting of: " + text);
@@ -112,7 +112,7 @@ public class Rule implements Comparable<Rule> {
 	private Map<String, String> parsePart(String part,
 			Map<String, Set<String>> meta) {
 		// remove {}
-		part = part.substring(1, part.length() - 1);
+//		part = part.substring(1, part.length() - 1);
 		Map<String, String> out = new HashMap<String, String>();
 		
 		for (int i = 0; i < meta.keySet().size(); i++) {
@@ -141,7 +141,7 @@ public class Rule implements Comparable<Rule> {
 
 	private Map<String, String> parsePart(String part) {
 		// remove {}
-		part = part.substring(1, part.length() - 1);
+//		part = part.substring(1, part.length() - 1);
 		Map<String, String> out = new HashMap<String, String>();
 		String[] attrs = part.split(",");
 		for (String attr : attrs) {
