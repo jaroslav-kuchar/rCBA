@@ -9,14 +9,7 @@ import java.util.logging.Logger;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import cz.jkuchar.rcba.TestConfiguration;
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { TestConfiguration.class })
 public class RuleTest {
 
 	Logger logger = Logger.getLogger(RuleTest.class.getCanonicalName());
@@ -80,6 +73,17 @@ public class RuleTest {
 		Assert.assertEquals(r.getCons().size(), 1);
 		Assert.assertTrue(r.getAnt().containsKey("a"));
 		Assert.assertTrue(r.getAnt().get("a").contains("1"));
+		Assert.assertTrue(r.getCons().containsKey("b"));
+		Assert.assertTrue(r.getCons().get("b").contains("2"));
+	}
+	
+	@Test
+	public void charInValue() {
+		Rule r = Rule.buildRule("{a=>1} => {b=2}", 0.0, 0.0);
+		Assert.assertEquals(r.getAnt().size(), 1);
+		Assert.assertEquals(r.getCons().size(), 1);
+		Assert.assertTrue(r.getAnt().containsKey("a"));
+		Assert.assertTrue(r.getAnt().get("a").contains(">1"));
 		Assert.assertTrue(r.getCons().containsKey("b"));
 		Assert.assertTrue(r.getCons().get("b").contains("2"));
 	}

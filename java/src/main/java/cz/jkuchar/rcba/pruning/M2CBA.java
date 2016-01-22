@@ -13,11 +13,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 import cz.jkuchar.rcba.rules.Item;
 import cz.jkuchar.rcba.rules.Rule;
 import cz.jkuchar.rcba.rules.RuleEngine;
@@ -26,14 +21,11 @@ import cz.jkuchar.rcba.rules.RuleEngine;
  * http://cgi.csc.liv.ac.uk/~frans/KDD/Software/CBA/cba.html
  */
 
-@Component
-@Scope("prototype")
 public class M2CBA implements Pruning {
 
-	Logger logger = Logger.getLogger(M2CBA.class.getName());
-
-	@Autowired
-	private RuleEngine re;
+//	Logger logger = Logger.getLogger(M2CBA.class.getName());
+	
+	private RuleEngine re = new RuleEngine();
 
 	private List<Integer> Q;
 	private List<Integer> U;
@@ -57,13 +49,13 @@ public class M2CBA implements Pruning {
 		A = Collections.synchronizedList(new ArrayList<Tuple>());
 
 		// stages
-		long startTime = System.nanoTime();
+//		long startTime = System.nanoTime();
 		stage1(rules, train);
-		logger.debug("Stage1: " + (System.nanoTime() - startTime) / 1000000 + " ms");
+//		logger.debug("Stage1: " + (System.nanoTime() - startTime) / 1000000 + " ms");
 		stage2(rules, train);
-		logger.debug("Stage2: " + (System.nanoTime() - startTime) / 1000000 + " ms");
+//		logger.debug("Stage2: " + (System.nanoTime() - startTime) / 1000000 + " ms");
 		stage3(rules, train);
-		logger.debug("Stage3: " + (System.nanoTime() - startTime) / 1000000 + " ms");
+//		logger.debug("Stage3: " + (System.nanoTime() - startTime) / 1000000 + " ms");
 
 		// // debug print
 		// C.stream().forEach(

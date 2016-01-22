@@ -1,7 +1,6 @@
 package cz.jkuchar.rcba.rules;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -10,13 +9,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 import cz.jkuchar.rcba.pruning.Tuple;
 
-@Component
-@Scope("prototype")
+
 public class Rule implements Comparable<Rule> {
 
 	// textual representation of rule

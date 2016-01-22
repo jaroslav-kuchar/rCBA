@@ -8,39 +8,27 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.opencsv.CSVReader;
 
-import cz.jkuchar.rcba.TestConfiguration;
 import cz.jkuchar.rcba.rules.Item;
 import cz.jkuchar.rcba.rules.Rule;
 import cz.jkuchar.rcba.rules.RuleEngine;
 
-
 // https://netbeans.org/kb/docs/java/profiler-intro.html
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={TestConfiguration.class})
 public class PruningTest {
 	List<Rule> rules;
 	List<Item> train;
 	List<Item> test;
-	
-	@Autowired 
+	 
 	RuleEngine re;
 	
-	@Autowired
-	DCBrCBA dcp;
+	DCBrCBA dcp = new DCBrCBA();
 	
-	@Autowired
-	M1CBA m1p;
+	M1CBA m1p = new M1CBA();
 	
-	@Autowired
-	M2CBA m2p;
+	M2CBA m2p = new M2CBA();
 	
 	@Before
 	public void loadRules() throws IOException{

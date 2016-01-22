@@ -26,7 +26,7 @@ pruning <- function(train, rules, method="m2cba"){
 	init()
 	print(paste(Sys.time()," rCBA: initialized",sep=""))
 	# init interface
-	jPruning <- J("cz.jkuchar.rcba.r.RSpring")$initializePruning()
+	jPruning <- .jnew("cz/jkuchar/rcba/r/RPruning")
 	# set column names
 	.jcall(jPruning, , "setColumns", .jarray(colnames(train)))
 

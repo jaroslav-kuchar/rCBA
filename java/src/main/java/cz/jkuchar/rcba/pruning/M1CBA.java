@@ -7,26 +7,22 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import cz.jkuchar.rcba.rules.Item;
 import cz.jkuchar.rcba.rules.Rule;
 import cz.jkuchar.rcba.rules.RuleEngine;
 
-@Component
-public class M1CBA implements Pruning {
 
-	@Autowired
-	RuleEngine re;
+public class M1CBA implements Pruning {	
+	
+	RuleEngine re = new RuleEngine();
 
 	@Override
-	public List<Rule> prune(List<Rule> rules, List<Item> train) {
+	public List<Rule> prune(List<Rule> rules, List<Item> train) {		
 		Collections.sort(rules);
 		List<Rule> pruned = new LinkedList<Rule>();
 

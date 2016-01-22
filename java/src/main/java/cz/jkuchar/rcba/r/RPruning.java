@@ -12,10 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 import cz.jkuchar.rcba.pruning.DCBrCBA;
 import cz.jkuchar.rcba.pruning.M1CBA;
 import cz.jkuchar.rcba.pruning.M2CBA;
@@ -24,8 +20,6 @@ import cz.jkuchar.rcba.rules.Item;
 import cz.jkuchar.rcba.rules.Rule;
 import cz.jkuchar.rcba.rules.RuleEngine;
 
-@Component
-@Scope("prototype")
 public class RPruning {
 
 	private List<Rule> rules;
@@ -33,18 +27,8 @@ public class RPruning {
 	private String[] cNames;
 
 	private Map<String, Set<String>> cache;
-
-	@Autowired
-	M2CBA m2Pruning;
-
-	@Autowired
-	M1CBA m1pruning;
-
-	@Autowired
-	DCBrCBA dcpruning;
-
-	@Autowired
-	private RuleEngine re;
+	
+	private RuleEngine re = new RuleEngine();
 
 	public RPruning() {
 		this.cNames = new String[1];
@@ -129,13 +113,13 @@ public class RPruning {
 		Pruning pruning;
 		switch (method) {
 		case "dcbrcba":
-			pruning = dcpruning;
+			pruning = new DCBrCBA();
 			break;
 		case "m1cba":
-			pruning = m1pruning;
+			pruning = new M1CBA();
 			break;
 		default:
-			pruning = m2Pruning;
+			pruning = new M2CBA();
 			break;
 		}
 		try {
