@@ -4,14 +4,14 @@
 \alias{build}
 \title{A build classifier function}
 \usage{
-build(trainData, className = NA, maxRules = 10000)
+build(trainData, className = NA, pruning = TRUE)
 }
 \arguments{
 \item{trainData}{data.frame with train data}
 
 \item{className}{column with target class - default is the last column}
 
-\item{maxRules}{maximum rules in the build model}
+\item{pruning}{performing pruning while building the model}
 }
 \value{
 data.frame with rules
@@ -23,19 +23,11 @@ A build classifier function
 library("rCBA")
 data("iris")
 
-train <- sapply(iris, as.factor)
-train <- data.frame(train, check.names=FALSE)
+model <- rCBA::build(iris)
 
-model = rCBA::build(train)
-
-predictions <- rCBA::classification(train, model)
+predictions <- rCBA::classification(iris, model)
 table(predictions)
-sum(train$Species==predictions, na.rm=TRUE) / length(predictions)
+sum(iris$Species==predictions, na.rm=TRUE) / length(predictions)
 
-prunedModel <- rCBA::pruning(train, model)
-
-predictions <- rCBA::classification(train, prunedModel)
-table(predictions)
-sum(train$Species==predictions, na.rm=TRUE) / length(predictions)
 }
 

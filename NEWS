@@ -1,3 +1,14 @@
+rCBA 0.1.0 (Release date: 2016-02-01)
+==============
+
+Changes:
+
+* Improved pruning algorithms
+* Implemented a classification function
+* Implemented an automatic model build 
+* Optimalization of Java dependencies
+
+
 rCBA 0.0.1 (Release date: 2015-12-08)
 ==============
 

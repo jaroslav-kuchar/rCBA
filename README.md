@@ -52,26 +52,16 @@ devtools::install_github("jaroslav-kuchar/rCBA")
 
 ## Usage
 
-Example 1 - automatically build model + pruning + classification:
+Example 1 - automatically build model (including pruning) + classification:
 
 ```R
 library("rCBA")
 data("iris")
 
-train <- sapply(iris, as.factor)
-train <- data.frame(train, check.names=FALSE)
-
-model <- rCBA::build(train)
-
-predictions <- rCBA::classification(train, model)
+model <- rCBA::build(iris)
+predictions <- rCBA::classification(iris, model)
 table(predictions)
-sum(train$Species==predictions, na.rm=TRUE) / length(predictions)
-
-prunedModel <- rCBA::pruning(train, model)
-
-predictions <- rCBA::classification(train, prunedModel)
-table(predictions)
-sum(train$Species==predictions, na.rm=TRUE) / length(predictions)
+sum(iris$Species==predictions, na.rm=TRUE) / length(predictions)
 ```
 
 Example 2 - apriori + pruning:
@@ -88,7 +78,7 @@ rules <- subset( rules, subset = rhs %pin% "y=") # filter
 rulesFrame <- as(rules,"data.frame") # convert
 
 print(nrow(rulesFrame))
-prunedRulesFrame <- pruning(train, rulesFrame, method="m2cba") # m2cba(default)|m1cba|dcbrcba
+prunedRulesFrame <- rCBA::pruning(train, rulesFrame, method="m2cba") # m2cba(default)|m1cba|dcbrcba
 print(nrow(prunedRulesFrame))
 ```
 
@@ -107,12 +97,12 @@ rules = apriori(txns, parameter=list(support=0.03, confidence=0.03, minlen=2),
 	appearance = list(rhs=c("Species=setosa", "Species=versicolor", "Species=virginica"),default="lhs"))
 rulesFrame <- as(rules,"data.frame")
 
-predictions <- classification(train,rulesFrame)
+predictions <- rCBA::classification(train,rulesFrame)
 table(predictions)
 sum(train$Species==predictions,na.rm=TRUE)/length(predictions)
 
-prunedRulesFrame <- pruning(train, rulesFrame, method="m2cba")
-predictions <- classification(train, prunedRulesFrame)
+prunedRulesFrame <- rCBA::pruning(train, rulesFrame, method="m2cba")
+predictions <- rCBA::classification(train, prunedRulesFrame)
 table(predictions)
 sum(train$Species==predictions,na.rm=TRUE)/length(predictions)
 ```
