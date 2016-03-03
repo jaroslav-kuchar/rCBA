@@ -172,9 +172,10 @@ build <- function(trainData, className=NA, pruning=TRUE){
 	rules <- NULL
 	# timeout limit
 	tryCatch({
-		rules <- evalWithTimeout({
-			apriori(txns, parameter = list(confidence = conf, support= supp, maxlen=maxRuleLen), appearance = list(rhs = paste(className,unique(trainSet[[className]]),sep="="), default="lhs"))
-		}, timeout=10)
+		# rules <- evalWithTimeout({
+		# 	apriori(txns, parameter = list(confidence = conf, support= supp, maxlen=maxRuleLen), appearance = list(rhs = paste(className,unique(trainSet[[className]]),sep="="), default="lhs"))
+		# }, timeout=10)
+		rules <- .processWithTimeout(function() apriori(txns, parameter = list(confidence = conf, support= supp, maxlen=maxRuleLen), appearance = list(rhs = paste(className,unique(trainSet[[className]]),sep="="), default="lhs")), timeout=10)
 	}, TimeoutException = function(e){
 		print("TimeoutException")
 	})
@@ -205,5 +206,27 @@ build <- function(trainData, className=NA, pruning=TRUE){
 	}
 	# otherwise compute acceptance
 	return(exp((newAcc*10.0 - acc*10.0) / temp))
+}
+
+.processWithTimeout <- function(fun, timeout=30) {
+	# implemented by https://github.com/propi
+	setTimeLimit(timeout+5);
+	myfork <- parallel::mcparallel({
+		fun()
+	}, silent=FALSE);
+	Sys.sleep(0.1);
+	myresult <- parallel::mccollect(myfork, wait=FALSE, timeout=timeout);
+	tools::pskill(myfork$pid, tools::SIGKILL);
+	tools::pskill(-1 * myfork$pid, tools::SIGKILL);
+	parallel::mccollect(myfork, wait=FALSE);
+	setTimeLimit();
+	if(is.null(myresult)){
+		stop("timeout", call.=FALSE);
+	}
+	myresult <- myresult[[1]];
+	if(inherits(myresult,"try-error")){
+		stop(attr(myresult, "condition"));
+	}
+	return(myresult);
 }
 
