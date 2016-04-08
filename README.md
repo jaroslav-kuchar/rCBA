@@ -58,7 +58,8 @@ Example 1 - automatically build model (including pruning) + classification:
 library("rCBA")
 data("iris")
 
-model <- rCBA::build(iris)
+output <- rCBA::build(iris)
+model <- output$model
 predictions <- rCBA::classification(iris, model)
 table(predictions)
 sum(iris$Species==predictions, na.rm=TRUE) / length(predictions)

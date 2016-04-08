@@ -4,7 +4,7 @@
 \alias{build}
 \title{A build classifier function}
 \usage{
-build(trainData, className = NA, pruning = TRUE)
+build(trainData, className = NA, pruning = TRUE, sa = list())
 }
 \arguments{
 \item{trainData}{data.frame with train data}
@@ -12,9 +12,11 @@ build(trainData, className = NA, pruning = TRUE)
 \item{className}{column with target class - default is the last column}
 
 \item{pruning}{performing pruning while building the model}
+
+\item{sa}{simulated annealing setting. default values list(temp=100.0, alpha=0.05, tabuRuleLength=5, timeout=10)}
 }
 \value{
-data.frame with rules
+list with parameters and model as data.frame with rules
 }
 \description{
 A build classifier function
@@ -23,7 +25,8 @@ A build classifier function
 library("rCBA")
 data("iris")
 
-model <- rCBA::build(iris)
+output <- rCBA::build(iris)
+model <- output$model
 
 predictions <- rCBA::classification(iris, model)
 table(predictions)
