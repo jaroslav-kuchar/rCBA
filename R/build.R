@@ -32,10 +32,12 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 	# preprocess
 	trainData <- sapply(trainData,as.factor)
 	trainData <- data.frame(trainData, check.names=F)
+	# trainData <- trainData[!is.na(trainData[[className]]),]
 	
 	# create train and test fold using stratified 2fold
-	folds <- generateCVRuns(labels = trainData[[className]],ntimes = 1,nfold = 4,stratified=TRUE)
+	folds <- generateCVRuns(labels = replace(c(trainData[[className]]), is.na(trainData[[className]]), paste("rCBA_unique-", Sys.time(), sep="")),ntimes = 1,nfold = 4,stratified=TRUE)
 	testIndex <- folds[[1]][[1]]
+	# testIndex <- testIndex[!is.na(testIndex)]
 	# create train and test fold using random sample
 	testSet <- trainData[testIndex,]
 	trainSet <- trainData[-testIndex,]
@@ -168,7 +170,7 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 	output$maxlen <- bestSolution[3]
 
 	# use best parameters
-	rules <- apriori(as(trainData, "transactions"), parameter = list(confidence = bestSolution[1], support= bestSolution[2], maxlen=bestSolution[3]), appearance = list(rhs = paste(className,unique(trainData[[className]]),sep="="), default="lhs"))	
+	rules <- apriori(as(trainData, "transactions"), parameter = list(confidence = bestSolution[1], support= bestSolution[2], maxlen=bestSolution[3]), appearance = list(rhs = paste(className,unique(trainData[[className]][!is.na(trainData[[className]])]),sep="="), default="lhs"))	
 	rulesFrame <- as(rules, "data.frame")
 	print(paste(Sys.time()," rCBA: rules ",nrow(rulesFrame),"x",ncol(rulesFrame),sep=""))
 	output$initialSize <- nrow(rulesFrame)
@@ -197,7 +199,7 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 	rules <- NULL
 	# timeout limit
 	tryCatch({
-		rules <- .processWithTimeout(function() apriori(txns, parameter = list(confidence = conf, support= supp, maxlen=maxRuleLen), appearance = list(rhs = paste(className,unique(trainSet[[className]]),sep="="), default="lhs")), timeout=to)
+		rules <- .processWithTimeout(function() apriori(txns, parameter = list(confidence = conf, support= supp, maxlen=maxRuleLen), appearance = list(rhs = paste(className,unique(trainData[[className]][!is.na(trainData[[className]])]),sep="="), default="lhs")), timeout=to)
 	}, TimeoutException = function(e){
 		print("TimeoutException")
 	}, error=function(ex) {
