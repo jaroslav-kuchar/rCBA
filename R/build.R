@@ -199,7 +199,7 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 	rules <- NULL
 	# timeout limit
 	tryCatch({
-		rules <- .processWithTimeout(function() apriori(txns, parameter = list(confidence = conf, support= supp, maxlen=maxRuleLen), appearance = list(rhs = paste(className,unique(trainData[[className]][!is.na(trainData[[className]])]),sep="="), default="lhs")), timeout=to)
+		rules <- .processWithTimeout(function() apriori(txns, parameter = list(confidence = conf, support= supp, maxlen=maxRuleLen), appearance = list(rhs = paste(className,unique(trainSet[[className]][!is.na(trainSet[[className]])]),sep="="), default="lhs")), timeout=to)
 	}, TimeoutException = function(e){
 		print("TimeoutException")
 	}, error=function(ex) {
