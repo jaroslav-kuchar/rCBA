@@ -7,7 +7,7 @@
 build(trainData, className = NA, pruning = TRUE, sa = list())
 }
 \arguments{
-\item{trainData}{data.frame with train data}
+\item{trainData}{data.frame or transactions with train data}
 
 \item{className}{column with target class - default is the last column}
 

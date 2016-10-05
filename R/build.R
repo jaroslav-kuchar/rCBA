@@ -1,6 +1,6 @@
 #' A build classifier function
 #'
-#' @param trainData data.frame with train data
+#' @param trainData data.frame or transactions with train data
 #' @param className column with target class - default is the last column
 #' @param pruning performing pruning while building the model
 #' @param sa simulated annealing setting. default values list(temp=100.0, alpha=0.05, tabuRuleLength=5, timeout=10)
@@ -9,17 +9,22 @@
 #' @examples
 #' library("rCBA")
 #' data("iris")
-#' 
+#'
 #' output <- rCBA::build(iris)
 #' model <- output$model
-#' 
+#'
 #' predictions <- rCBA::classification(iris, model)
 #' table(predictions)
 #' sum(iris$Species==predictions, na.rm=TRUE) / length(predictions)
-#' 
+#'
 #' @include init.R
 build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 	print(paste(Sys.time(), " rCBA: initialized", sep=""))
+
+  # convert data to frame if passed as transactions
+  if(is(trainData,"transactions")){
+    trainData <- transactionsToFrame(trainData)
+  }
 
 	# sa settings
 	sa <- modifyList(list(temp=100.0, alpha=0.05, tabuRuleLength=5, timeout=10), sa)
@@ -33,7 +38,7 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 	trainData <- sapply(trainData,as.factor)
 	trainData <- data.frame(trainData, check.names=F)
 	# trainData <- trainData[!is.na(trainData[[className]]),]
-	
+
 	# create train and test fold using stratified 2fold
 	folds <- generateCVRuns(labels = replace(c(trainData[[className]]), is.na(trainData[[className]]), paste("rCBA_unique-", Sys.time(), sep="")),ntimes = 1,nfold = 4,stratified=TRUE)
 	testIndex <- folds[[1]][[1]]
@@ -56,16 +61,16 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 	currentSolution <- c(runif(1,0,1),runif(1,0,1),round(runif(1,1,min(ncol(trainData),tabuRuleLength))))
 	currentSolutionAccuracy <- .evaluate(currentSolution[1], currentSolution[2], currentSolution[3], txns, trainSet, testSet, className, pruning, sa$timeout)
 	bestSolution <- currentSolution
-	bestSolutionAccuracy <- currentSolutionAccuracy	
+	bestSolutionAccuracy <- currentSolutionAccuracy
 
-	accuracies <- c(currentSolutionAccuracy)	
+	accuracies <- c(currentSolutionAccuracy)
 	iteration <- 0
 
 	# start
 	while(temp>1.0){
 		iteration <- iteration + 1
 		# generate new solution
-		newSolution <- currentSolution		
+		newSolution <- currentSolution
 		# change randomly selected parameter
 		parameter <- round(runif(1,1,3))
 		# support or confidence
@@ -73,7 +78,7 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 			# if not initiated properly
 			if(bestSolutionAccuracy<=0){
 				newSolution[parameter] <- runif(1,0,1)
-			} else {				
+			} else {
 				if(currentSolutionAccuracy==-1){
 					# mining failed - increase support/confidence
 					# direction <- min(newSolution[parameter]/3.0, 0.1)
@@ -113,10 +118,10 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 				# change value if possible
 				if(direction<0.5 && newSolution[parameter]>1){
 					newSolution[parameter] <- newSolution[parameter] - 1
-				} 
+				}
 				if(direction>0.5 && newSolution[parameter]<min(ncol(trainData),tabuRuleLength-1)){
 					newSolution[parameter] <- newSolution[parameter] + 1
-				} 
+				}
 			}
 		}
 		# compute accuracy
@@ -148,7 +153,7 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 		if(currentSolutionAccuracy>0){
 			accuracies <- c(accuracies,currentSolutionAccuracy)
 		}
-		# break if there is only small change of accuracies 
+		# break if there is only small change of accuracies
 		if(bestSolutionAccuracy>0 && accuracies[length(accuracies)]>0 && length(accuracies)>15 && abs(mean(tail(accuracies,15))-bestSolutionAccuracy)<=0.01 && abs(mean(tail(accuracies,15))-bestSolutionAccuracy)>0){
 			break
 		}
@@ -170,7 +175,7 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 	output$maxlen <- bestSolution[3]
 
 	# use best parameters
-	rules <- apriori(as(trainData, "transactions"), parameter = list(confidence = bestSolution[1], support= bestSolution[2], maxlen=bestSolution[3]), appearance = list(rhs = paste(className,unique(trainData[[className]][!is.na(trainData[[className]])]),sep="="), default="lhs"))	
+	rules <- apriori(as(trainData, "transactions"), parameter = list(confidence = bestSolution[1], support= bestSolution[2], maxlen=bestSolution[3]), appearance = list(rhs = paste(className,unique(trainData[[className]][!is.na(trainData[[className]])]),sep="="), default="lhs"))
 	rulesFrame <- as(rules, "data.frame")
 	print(paste(Sys.time()," rCBA: rules ",nrow(rulesFrame),"x",ncol(rulesFrame),sep=""))
 	output$initialSize <- nrow(rulesFrame)
@@ -184,7 +189,7 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 				repeating <- FALSE
 			},error=function(e){
  				print("pruning exception")
- 			})			
+ 			})
 		}
 	}
 	print(paste(Sys.time()," rCBA: rules ",nrow(rulesFrame),"x",ncol(rulesFrame),sep=""))
@@ -209,12 +214,12 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
      		stop(ex)
   		}
 	})
-	# mining failed or too many genereated rules 
+	# mining failed or too many genereated rules
 	if(is.null(rules) || length(rules)>1e5) {
 		return(-1)
 	}
 	# convert
-	rulesFrame <- as(rules, "data.frame")	
+	rulesFrame <- as(rules, "data.frame")
 	# pruning
 	if(pruning==TRUE && nrow(rulesFrame)>0){
 		repeating <- TRUE
@@ -224,7 +229,7 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 				repeating <- FALSE
 			},error=function(e){
  				print("pruning exception")
- 			})			
+ 			})
 		}
 	}
 	# classification and compute accuracy

@@ -3,3 +3,5 @@ java/.classpath
 README.md
 LICENSE
 rCBA.Rproj
+^.*\.Rproj$
+^\.Rproj\.user$

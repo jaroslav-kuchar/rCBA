@@ -1,6 +1,6 @@
 #' A Pruning function
 #'
-#' @param train data.frame with training data
+#' @param train data.frame or transactions with training data
 #' @param rules data.frame with rules
 #' @param method pruning method m2cba(default)|m1cba|dcbrcba
 #' @return data.frame with pruned rules
@@ -9,15 +9,15 @@
 #' library("arules")
 #' library("rCBA")
 #' data("iris")
-#' 
+#'
 #' train <- sapply(iris,as.factor)
 #' train <- data.frame(train, check.names=FALSE)
 #' txns <- as(train,"transactions")
-#' 
-#' rules = apriori(txns, parameter=list(support=0.03, confidence=0.03, minlen=2), 
+#'
+#' rules = apriori(txns, parameter=list(support=0.03, confidence=0.03, minlen=2),
 #'	appearance = list(rhs=c("Species=setosa", "Species=versicolor", "Species=virginica"),default="lhs"))
 #' rulesFrame <- as(rules,"data.frame")
-#' 
+#'
 #' print(nrow(rulesFrame))
 #' prunedRulesFrame <- pruning(train, rulesFrame, method="m2cba")
 #' print(nrow(prunedRulesFrame))
@@ -25,16 +25,20 @@
 pruning <- function(train, rules, method="m2cba"){
 	init()
 	print(paste(Sys.time()," rCBA: initialized",sep=""))
+	# convert data to frame if passed as transactions
+	if(is(train,"transactions")){
+	  train <- transactionsToFrame(train)
+	}
 	# init interface
 	jPruning <- .jnew("cz/jkuchar/rcba/r/RPruning")
 	# set column names
 	.jcall(jPruning, , "setColumns", .jarray(colnames(train)))
 
-	# add train items	
+	# add train items
 	trainConverted <- data.frame(lapply(train, as.character), stringsAsFactors=FALSE)
 	trainArray <- .jarray(lapply(trainConverted, .jarray))
 	.jcall(jPruning,,"addDataFrame",trainArray)
-	
+
 	print(paste(Sys.time()," rCBA: dataframe ",nrow(train),"x",ncol(train),sep=""))
 
 	# add rules
@@ -48,7 +52,7 @@ pruning <- function(train, rules, method="m2cba"){
 	jPruned <- .jcall(jPruning, "[Lcz/jkuchar/rcba/rules/Rule;", "prune", as.character(method))
 	print(paste(Sys.time()," rCBA: pruning completed",sep=""))
 	# build dataframe
-	pruned <- data.frame(rules=rep("", 0), support=rep(0.0, 0), confidence=rep(0.0, 0), lift=rep(0.0, 0), stringsAsFactors=FALSE) 
+	pruned <- data.frame(rules=rep("", 0), support=rep(0.0, 0), confidence=rep(0.0, 0), lift=rep(0.0, 0), stringsAsFactors=FALSE)
 	for(jRule in jPruned){
 		pruned[nrow(pruned) + 1,] <- c(.jcall(jRule, "S", "getText"), .jcall(jRule, "D", "getSupport"), .jcall(jRule, "D", "getConfidence"), .jcall(jRule, "D", "getLift"))
 	}

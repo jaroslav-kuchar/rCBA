@@ -1,3 +1,13 @@
+rCBA 0.2.0 (Release date: 2016-10-05)
+==============
+
+Changes:
+
+* Support for transactions as inputs
+* Fixed typos and bugs
+* Optimalization of Java dependencies
+
+
 rCBA 0.1.0 (Release date: 2016-02-01)
 ==============
 
@@ -5,7 +15,7 @@ Changes:
 
 * Improved pruning algorithms
 * Implemented a classification function
-* Implemented an automatic model build 
+* Implemented an automatic model build
 * Optimalization of Java dependencies
 
 

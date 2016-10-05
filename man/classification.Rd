@@ -7,7 +7,7 @@
 classification(test, rules)
 }
 \arguments{
-\item{test}{data.frame with test data}
+\item{test}{data.frame or transactions with test data}
 
 \item{rules}{data.frame with rules}
 }
@@ -26,7 +26,7 @@ train <- sapply(iris, as.factor)
 train <- data.frame(train, check.names=FALSE)
 txns <- as(train,"transactions")
 
-rules = apriori(txns, parameter=list(support=0.03, confidence=0.03, minlen=2), 
+rules = apriori(txns, parameter=list(support=0.03, confidence=0.03, minlen=2),
 appearance = list(rhs=c("Species=setosa", "Species=versicolor", "Species=virginica"),default="lhs"))
 rulesFrame <- as(rules,"data.frame")
 

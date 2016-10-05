@@ -7,7 +7,7 @@
 pruning(train, rules, method = "m2cba")
 }
 \arguments{
-\item{train}{data.frame with training data}
+\item{train}{data.frame or transactions with training data}
 
 \item{rules}{data.frame with rules}
 
@@ -28,7 +28,7 @@ train <- sapply(iris,as.factor)
 train <- data.frame(train, check.names=FALSE)
 txns <- as(train,"transactions")
 
-rules = apriori(txns, parameter=list(support=0.03, confidence=0.03, minlen=2), 
+rules = apriori(txns, parameter=list(support=0.03, confidence=0.03, minlen=2),
 appearance = list(rhs=c("Species=setosa", "Species=versicolor", "Species=virginica"),default="lhs"))
 rulesFrame <- as(rules,"data.frame")
 

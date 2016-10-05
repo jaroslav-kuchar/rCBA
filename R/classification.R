@@ -1,6 +1,6 @@
 #' A classification function
 #'
-#' @param test data.frame with test data
+#' @param test data.frame or transactions with test data
 #' @param rules data.frame with rules
 #' @return vector with classifications
 #' @export
@@ -8,15 +8,15 @@
 #' library("arules")
 #' library("rCBA")
 #' data("iris")
-#' 
+#'
 #' train <- sapply(iris, as.factor)
 #' train <- data.frame(train, check.names=FALSE)
 #' txns <- as(train,"transactions")
-#' 
-#' rules = apriori(txns, parameter=list(support=0.03, confidence=0.03, minlen=2), 
+#'
+#' rules = apriori(txns, parameter=list(support=0.03, confidence=0.03, minlen=2),
 #'	appearance = list(rhs=c("Species=setosa", "Species=versicolor", "Species=virginica"),default="lhs"))
 #' rulesFrame <- as(rules,"data.frame")
-#' 
+#'
 #' predictions <- classification(train,rulesFrame)
 #' table(predictions)
 #' sum(train$Species==predictions,na.rm=TRUE)/length(predictions)
@@ -25,6 +25,10 @@ classification <- function(test, rules){
 	# init java
 	init()
 	print(paste(Sys.time()," rCBA: initialized",sep=""))
+	# convert data to frame if passed as transactions
+	if(is(test,"transactions")){
+	  test <- transactionsToFrame(test)
+	}
 	# init interface
 	jPruning <- .jnew("cz/jkuchar/rcba/r/RPruning")
 	# set column names
@@ -33,7 +37,7 @@ classification <- function(test, rules){
 	# add test items
 	testConverted <- data.frame(lapply(test, as.character), stringsAsFactors=FALSE)
 	testArray <- .jarray(lapply(testConverted, .jarray))
-	.jcall(jPruning,,"addDataFrame",testArray)	
+	.jcall(jPruning,,"addDataFrame",testArray)
 	print(paste(Sys.time()," rCBA: dataframe ",nrow(test),"x",ncol(test),sep=""))
 
 	# add rules
