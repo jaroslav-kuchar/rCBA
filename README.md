@@ -1,5 +1,7 @@
 # rCBA
 
+[![Build Status](https://travis-ci.org/jaroslav-kuchar/rCBA.svg?branch=master)](https://travis-ci.org/jaroslav-kuchar/rCBA)
+
 CBA classifier for R - provides implementations of a classifier based on the "Classification Based on Associations" (CBA). It can be used for building classification models from association rules. Rules are pruned in the order of precedence given by the sort criteria and a default rule is added. The final classifier labels provided instances. CBA was originally proposed by Liu, B. Hsu, W. and Ma, Y (1998). Integrating Classification and Association Rule Mining. Proceedings KDD-98, New York, 27-31 August. AAAI. pp80-86.
 
 If you publish your research that uses rCBA, please cite:

@@ -5,3 +5,4 @@ LICENSE
 rCBA.Rproj
 ^.*\.Rproj$
 ^\.Rproj\.user$
+.travis.yml
