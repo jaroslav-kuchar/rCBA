@@ -1,7 +1,7 @@
-language: R
-sudo: false
-cache: packages
 addons:
   apt:
     packages:
       - oracle-java8-installer
+language: R
+sudo: false
+cache: packages
