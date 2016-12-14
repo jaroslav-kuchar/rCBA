@@ -52,6 +52,7 @@ public class M1CBA implements Pruning {
 
 				List<String> mc = train.stream().parallel()
 						.map(tr -> tr.get(className))
+						.filter(s -> s!=null)
 						.collect(Collectors.toList());
 				Entry<String, Integer> mostCommon = mostCommon(mc);
 				if (mostCommon != null) {

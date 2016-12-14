@@ -217,6 +217,7 @@ public class M2CBA implements Pruning {
 		int minErrorRid = 0;
 		int ruleErrors = 0;
 		Map<String, Integer> classDistr = train.parallelStream().map(tr -> tr.get(className))
+				.filter(s -> s!=null)
 				.collect(Collectors.toList()).stream().collect(Collectors.toMap(s -> s, s -> 1, Integer::sum));
 		List<Integer> QQ = Q.parallelStream().distinct().collect(Collectors.toList());
 		Collections.sort(QQ);
