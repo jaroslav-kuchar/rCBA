@@ -180,21 +180,21 @@ public class Rule implements Comparable<Rule> {
 		this.defaultRule = defaultRule;
 	}
 
-	public void incClassCasesCovered(String className) {
+	public synchronized void incClassCasesCovered(String className) {
 		if (!this.classCasesCovered.containsKey(className)) {
 			classCasesCovered.put(className, 0);
 		}
 		classCasesCovered.put(className, classCasesCovered.get(className) + 1);
 	}
 
-	public void decClassCasesCovered(String className) {
+	public synchronized void decClassCasesCovered(String className) {
 		if (!this.classCasesCovered.containsKey(className)) {
 			classCasesCovered.put(className, 0);
 		}
 		classCasesCovered.put(className, classCasesCovered.get(className) - 1);
 	}
 	
-	public void setClassCasesCovered(String className, int value) {
+	public synchronized void setClassCasesCovered(String className, int value) {
 		if (!this.classCasesCovered.containsKey(className)) {
 			classCasesCovered.put(className, 0);
 		}
@@ -205,7 +205,7 @@ public class Rule implements Comparable<Rule> {
 		return this.classCasesCovered;
 	}
 
-	public void addReplace(Tuple tuple) {
+	public synchronized void addReplace(Tuple tuple) {
 		if (!this.replaces.contains(tuple)) {
 			replaces.add(tuple);
 		}
@@ -219,11 +219,11 @@ public class Rule implements Comparable<Rule> {
 		return this.marked;
 	}
 
-	public void mark() {
+	public synchronized void mark() {
 		this.marked = true;
 	}
 
-	public void unmark() {
+	public synchronized void unmark() {
 		this.marked = false;
 	}	
 
