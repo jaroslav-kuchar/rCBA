@@ -49,6 +49,7 @@ classification <- function(test, rules){
 
 	# perform classification
 	jResult <- .jcall(jPruning, "[S", "classify")
+	J("java.lang.System")$gc()
 	print(paste(Sys.time()," rCBA: classification completed",sep=""))
 	# build output
 	jResult

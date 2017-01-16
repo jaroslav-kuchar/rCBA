@@ -14,7 +14,7 @@
 
 init <- function(){
 	# initialize rJava
-	.jinit()
+  .jinit()
 	if(J("java.lang.System")$getProperty("java.version") < "1.8.0") {
 		stop("rCBA requires Java >= 1.8 ", call. = FALSE)
 	}

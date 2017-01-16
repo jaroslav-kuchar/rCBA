@@ -56,6 +56,7 @@ pruning <- function(train, rules, method="m2cba"){
 	for(jRule in jPruned){
 		pruned[nrow(pruned) + 1,] <- c(.jcall(jRule, "S", "getText"), .jcall(jRule, "D", "getSupport"), .jcall(jRule, "D", "getConfidence"), .jcall(jRule, "D", "getLift"))
 	}
+	J("java.lang.System")$gc()
 	print(paste(Sys.time()," rCBA: pruned rules ",nrow(pruned),"x",ncol(pruned),sep=""))
 	pruned$support <- as.double(pruned$support)
 	pruned$confidence <- as.double(pruned$confidence)
