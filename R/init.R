@@ -33,16 +33,26 @@ init <- function(){
 }
 
 transactionsToFrame <- function(txns){
-  columnNames <- as.character(unique(txns@itemInfo$variables))
-  df <- as.data.frame(setNames(replicate(length(columnNames),character(0), simplify = F), columnNames), stringsAsFactors = FALSE)
-  apply(txns@data,2, function(x){
-    row <- as.character(txns@itemInfo[which(x),]$levels)
-    df[nrow(df)+1,] <<- row
-    NULL
-  })
-  # for(i in 1:length(txns)){
-  #   row <- as.character(txns@itemInfo[which(matrix(txns[i]@data)),]$levels)
-  #   df[nrow(df)+1,] <- row
-  # }
+  if(is.null(txns@itemInfo$variables) || is.null(txns@itemInfo$levels)){
+    levels <- unname(sapply(txns@itemInfo$labels,function(x) strsplit(x,"=")[[1]][2]))
+    variables <- unname(sapply(txns@itemInfo$labels,function(x) strsplit(x,"=")[[1]][1]))
+    columnNames <- unique(variables)
+    df <- as.data.frame(setNames(replicate(length(columnNames),character(0), simplify = F), columnNames), stringsAsFactors = FALSE)
+    apply(txns@data,2, function(x){
+      row <- vector(mode="character", length=length(columnNames))
+      row[match(variables[which(x)],columnNames)] <- levels[which(x)]
+      df[nrow(df)+1,] <<- row
+      NULL
+    })
+  } else {
+    columnNames <- as.character(unique(txns@itemInfo$variables))
+    levels <- txns@itemInfo$levels
+    df <- as.data.frame(setNames(replicate(length(columnNames),character(0), simplify = F), columnNames), stringsAsFactors = FALSE)
+    apply(txns@data,2, function(x){
+      row <- as.character(levels[which(x)])
+      df[nrow(df)+1,] <<- row
+      NULL
+    })
+  }
   df
 }
