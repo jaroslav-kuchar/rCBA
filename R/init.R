@@ -39,7 +39,7 @@ transactionsToFrame <- function(txns){
     columnNames <- unique(variables)
     df <- as.data.frame(setNames(replicate(length(columnNames),character(0), simplify = F), columnNames), stringsAsFactors = FALSE)
     apply(txns@data,2, function(x){
-      row <- vector(mode="character", length=length(columnNames))
+      row <- rep(NA,length(columnNames))
       row[match(variables[which(x)],columnNames)] <- levels[which(x)]
       df[nrow(df)+1,] <<- row
       NULL
