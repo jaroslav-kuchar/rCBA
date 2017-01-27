@@ -2,6 +2,7 @@
 
 export(build)
 export(classification)
+export(frameToRules)
 export(pruning)
 import(R.utils)
 import(TunePareto)
