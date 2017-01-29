@@ -25,21 +25,28 @@
 pruning <- function(train, rules, method="m2cba"){
 	init()
 	print(paste(Sys.time()," rCBA: initialized",sep=""))
-	# convert data to frame if passed as transactions
-	if(is(train,"transactions")){
-	  train <- transactionsToFrame(train)
-	}
 	# init interface
 	jPruning <- .jnew("cz/jkuchar/rcba/r/RPruning")
-	# set column names
-	.jcall(jPruning, , "setColumns", .jarray(colnames(train)))
 
-	# add train items
-	trainConverted <- data.frame(lapply(train, as.character), stringsAsFactors=FALSE)
-	trainArray <- .jarray(lapply(trainConverted, .jarray))
-	.jcall(jPruning,,"addDataFrame",trainArray)
-
-	print(paste(Sys.time()," rCBA: dataframe ",nrow(train),"x",ncol(train),sep=""))
+	if(is(train,"transactions")){
+	  # extract vars
+	  levels <- unname(sapply(train@itemInfo$labels,function(x) strsplit(x,"=")[[1]][2]))
+	  variables <- unname(sapply(train@itemInfo$labels,function(x) strsplit(x,"=")[[1]][1]))
+	  # set column names
+	  .jcall(jPruning, , "setColumns", .jarray(variables))
+	  # set values
+	  .jcall(jPruning, , "setValues", .jarray(levels))
+	  # add data
+	  .jcall(jPruning,,"addTransactionMatrix",.jarray(apply(as(t(train@data),"matrix"),1, .jarray)))
+	} else {
+  	# set column names
+  	.jcall(jPruning, , "setColumns", .jarray(colnames(train)))
+  	# add train items
+  	trainConverted <- data.frame(lapply(train, as.character), stringsAsFactors=FALSE)
+  	trainArray <- .jarray(lapply(trainConverted, .jarray))
+  	.jcall(jPruning,,"addDataFrame",trainArray)
+	}
+	print(paste(Sys.time()," rCBA: data ",paste(dim(train), collapse="x"),sep=""))
 
 	# add rules
 	rulesFrame <- as(rules,"data.frame")

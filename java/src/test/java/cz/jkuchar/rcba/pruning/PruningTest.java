@@ -74,6 +74,7 @@ public class PruningTest {
 		System.out.println("Pruning: "+(System.nanoTime()-startTime)/1000000+" ms");
 		System.out.println(after.size());
 		Assert.assertTrue(after.size()>0 && after.size()<pre);
+		Assert.assertEquals(189, after.size());
 	}
 
 }

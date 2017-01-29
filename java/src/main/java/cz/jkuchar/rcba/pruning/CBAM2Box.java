@@ -12,11 +12,11 @@ import java.util.TreeSet;
 public class CBAM2Box implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	protected List<ASet> A = new ArrayList<ASet>();
+	protected List<CBAM2BoxASet> A = new ArrayList<CBAM2BoxASet>();
 	protected Map<Integer, Map<String, Integer>> dClasses = new HashMap<Integer, Map<String, Integer>>();
 	protected Set<Integer> crules = new TreeSet<Integer>();
 	protected Set<Integer> marked = new TreeSet<Integer>();
-	protected Map<Integer,List<ASet>> replaces = new HashMap<Integer, List<ASet>>();
+	protected Map<Integer,List<CBAM2BoxASet>> replaces = new HashMap<Integer, List<CBAM2BoxASet>>();
 
 	protected void initDClass(int cRule, String dClass) {
 		dClasses.put(cRule, new HashMap<String, Integer>() {
@@ -54,11 +54,11 @@ public class CBAM2Box implements Serializable {
 		}
 	}
 	
-	protected void updateReplaces(int rule, ASet aset){
+	protected void updateReplaces(int rule, CBAM2BoxASet aset){
 		if(replaces.containsKey(rule)){
 			replaces.get(rule).add(aset);
 		} else {
-			replaces.put(rule, new LinkedList<ASet>(){{add(aset);}});
+			replaces.put(rule, new LinkedList<CBAM2BoxASet>(){{add(aset);}});
 		}
 	}
 

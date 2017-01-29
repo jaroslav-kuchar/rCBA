@@ -31,7 +31,7 @@ public class M1CBA implements Pruning {
 
 		for (int rid = 0; rid < rules.size(); rid++) {
 			Rule rule = rules.get(rid);
-			String className = rule.getCons().keySet().iterator().next();
+			String className = rule.getCons().keys().iterator().next();
 			// match of antecedents
 			List<Integer> temp = IntStream.range(0, train.size()).parallel()
 					.filter(item -> re.matchRule(rule, train.get(item)))
@@ -51,7 +51,7 @@ public class M1CBA implements Pruning {
 				}
 
 				List<String> mc = train.stream().parallel()
-						.map(tr -> tr.get(className))
+						.flatMap(tr -> tr.get(className).stream())
 						.filter(s -> s!=null)
 						.collect(Collectors.toList());
 				Entry<String, Integer> mostCommon = mostCommon(mc);
@@ -95,7 +95,7 @@ public class M1CBA implements Pruning {
 			pruned.add(pruned.get(pruned.size() - 1).getDefaultRule());
 			
 			Rule dRule = pruned.get(pruned.size()-1);			
-			String className = dRule.getCons().keySet().iterator().next();			
+			String className = dRule.getCons().keys().iterator().next();
 			long count = IntStream.range(0, train.size()).parallel()
 					.filter(item -> dRule.getCons().get(className).equals(train.get(item).get(className)))
 					.count();						

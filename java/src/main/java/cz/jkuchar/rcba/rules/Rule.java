@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cz.jkuchar.rcba.pruning.Tuple;
+import cz.jkuchar.rcba.pruning.ASet;
 
 
 public class Rule implements Comparable<Rule> {
@@ -26,11 +26,14 @@ public class Rule implements Comparable<Rule> {
 	private Rule defaultRule;
 
 	private boolean marked = false;
-	private List<Tuple> replaces = new ArrayList<Tuple>();
+	private List<ASet> replaces = new ArrayList<ASet>();
 	private Map<String, Integer> classCasesCovered = new HashMap<String, Integer>();
 
-	private Map<String, String> antecendent = new HashMap<String, String>();
-	private Map<String, String> consequent = new HashMap<String, String>();
+//	private Map<String, String> antecendent = new HashMap<String, String>();
+//	private Map<String, String> consequent = new HashMap<String, String>();
+
+	private TupleCollection antecendent = new TupleCollection();
+	private TupleCollection consequent = new TupleCollection();
 
 	private Rule() {
 		super();
@@ -52,11 +55,11 @@ public class Rule implements Comparable<Rule> {
 		return lift;
 	}
 
-	public Map<String, String> getAnt() {
+	public TupleCollection getAnt() {
 		return antecendent;
 	}
 
-	public Map<String, String> getCons() {
+	public TupleCollection getCons() {
 		return consequent;
 	}
 
@@ -104,11 +107,11 @@ public class Rule implements Comparable<Rule> {
 		}
 	}
 
-	private Map<String, String> parsePart(String part,
+	private TupleCollection parsePart(String part,
 			Map<String, Set<String>> meta) {
 		// remove {}
 //		part = part.substring(1, part.length() - 1);
-		Map<String, String> out = new HashMap<String, String>();
+		TupleCollection out = new TupleCollection();
 		
 		for (int i = 0; i < meta.keySet().size(); i++) {
 			for (String key : meta.keySet()) {
@@ -134,10 +137,10 @@ public class Rule implements Comparable<Rule> {
 		return out;
 	}
 
-	private Map<String, String> parsePart(String part) {
+	private TupleCollection parsePart(String part) {
 		// remove {}
 //		part = part.substring(1, part.length() - 1);
-		Map<String, String> out = new HashMap<String, String>();
+		TupleCollection out = new TupleCollection();
 		String[] attrs = part.split(",");
 		for (String attr : attrs) {
 			Pattern pattern = Pattern.compile("(.*)=(.*)");
@@ -205,13 +208,13 @@ public class Rule implements Comparable<Rule> {
 		return this.classCasesCovered;
 	}
 
-	public synchronized void addReplace(Tuple tuple) {
-		if (!this.replaces.contains(tuple)) {
-			replaces.add(tuple);
+	public synchronized void addReplace(ASet aset) {
+		if (!this.replaces.contains(aset)) {
+			replaces.add(aset);
 		}
 	}
 
-	public List<Tuple> getReplaces() {
+	public List<ASet> getReplaces() {
 		return this.replaces;
 	}
 
