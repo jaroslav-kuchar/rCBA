@@ -88,3 +88,7 @@ local.properties
 
 # TeXlipse plugin
 .texlipse
+
+# IDEA
+*.iml
+.idea
