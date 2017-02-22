@@ -18,7 +18,7 @@ public class DCBrCBA implements Pruning {
 		Collections.sort(rules);
 		List<Rule> pruned = new LinkedList<Rule>();
 		for (Rule rule : rules) {
-			String className = rule.getCons().keySet().iterator().next();
+			String className = rule.getCons().keys().iterator().next();
 
 			List<Integer> matches = IntStream
 					.range(0, train.size())

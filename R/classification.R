@@ -25,20 +25,27 @@ classification <- function(test, rules){
 	# init java
 	init()
 	print(paste(Sys.time()," rCBA: initialized",sep=""))
-	# convert data to frame if passed as transactions
-	if(is(test,"transactions")){
-	  test <- transactionsToFrame(test)
-	}
 	# init interface
 	jPruning <- .jnew("cz/jkuchar/rcba/r/RPruning")
-	# set column names
-	.jcall(jPruning, , "setColumns", .jarray(colnames(test)))
-
-	# add test items
-	testConverted <- data.frame(lapply(test, as.character), stringsAsFactors=FALSE)
-	testArray <- .jarray(lapply(testConverted, .jarray))
-	.jcall(jPruning,,"addDataFrame",testArray)
-	print(paste(Sys.time()," rCBA: dataframe ",nrow(test),"x",ncol(test),sep=""))
+	if(is(test,"transactions")){
+	  # extract vars
+	  levels <- unname(sapply(test@itemInfo$labels,function(x) strsplit(x,"=")[[1]][2]))
+	  variables <- unname(sapply(test@itemInfo$labels,function(x) strsplit(x,"=")[[1]][1]))
+	  # set column names
+	  .jcall(jPruning, , "setColumns", .jarray(variables))
+	  # set values
+	  .jcall(jPruning, , "setValues", .jarray(levels))
+	  # add data
+	  .jcall(jPruning,,"addTransactionMatrix",.jarray(apply(as(t(test@data),"matrix"),1, .jarray)))
+	} else {
+	  # set column names
+	  .jcall(jPruning, , "setColumns", .jarray(colnames(test)))
+	  # add test items
+	  testConverted <- data.frame(lapply(test, as.character), stringsAsFactors=FALSE)
+	  testArray <- .jarray(lapply(testConverted, .jarray))
+	  .jcall(jPruning,,"addDataFrame",testArray)
+	}
+	print(paste(Sys.time()," rCBA: data ",paste(dim(test), collapse="x"),sep=""))
 
 	# add rules
 	rulesFrame <- as(rules,"data.frame")

@@ -91,4 +91,8 @@ local.properties
 
 # IDEA
 *.iml
+<<<<<<< HEAD
 .idea
+=======
+.idea
+>>>>>>> develop

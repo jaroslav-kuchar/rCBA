@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import cz.jkuchar.rcba.pruning.DCBrCBA;
 import cz.jkuchar.rcba.pruning.M1CBA;
 import cz.jkuchar.rcba.pruning.M2CBA;
@@ -25,6 +26,7 @@ public class RPruning {
 	private List<Rule> rules;
 	private List<Item> items;
 	private String[] cNames;
+	private String[] values;
 
 	private Map<String, Set<String>> cache;
 	
@@ -32,6 +34,7 @@ public class RPruning {
 
 	public RPruning() {
 		this.cNames = new String[1];
+		this.values = new String[1];
 		this.rules = new ArrayList<Rule>();
 		this.items = new ArrayList<Item>();
 		this.cache = new HashMap<String, Set<String>>();
@@ -42,6 +45,10 @@ public class RPruning {
 		for (String cname : cNames) {
 			this.cache.put(cname, new HashSet<String>());
 		}
+	}
+
+	public void setValues(String[] values) {
+		this.values = values;
 	}
 
 	public void loadItemsFromFile(String fileName) {
@@ -55,6 +62,24 @@ public class RPruning {
 					.forEach(line -> addItem(line));
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
+		}
+	}
+
+	public void addTransactionMatrix(Object matrix[]) {
+		int rows = matrix.length;
+		if (rows > 0) {
+			int columns = ((boolean[]) matrix[0]).length;
+			for (int i = 0; i < rows; i++) {
+				Item item = new Item();
+				for (int j = 0; j < columns; j++) {
+					boolean v = ((boolean []) matrix[i])[j];
+					if(v){
+						item.put(cNames[j], values[j]);
+						this.cache.get(cNames[j]).add(values[j]);
+					}
+				}
+				this.items.add(item);
+			}
 		}
 	}
 

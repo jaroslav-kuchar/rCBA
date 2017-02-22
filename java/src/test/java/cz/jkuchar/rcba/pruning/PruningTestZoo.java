@@ -61,7 +61,7 @@ public class PruningTestZoo {
 		System.out.println("Train data: "+train.size());
 		int pre = rules.size();
 		System.out.println(pre);
-		
+
 		List<Double> times = new LinkedList<>();
 
 		for (int i = 0; i < 10; i++) {
@@ -73,6 +73,7 @@ public class PruningTestZoo {
 			times.add((double) ((System.nanoTime()-startTime)/1000000));
 			System.out.println(after.size());
 			Assert.assertTrue(after.size()>0 && after.size()<pre);
+			Assert.assertEquals(8, after.size());
 		}		
 		System.out.println(times.stream().mapToDouble(a -> a).average().getAsDouble());
 

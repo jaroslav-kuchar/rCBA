@@ -218,4 +218,19 @@ public class RuleTest {
 		Assert.assertTrue(r.getCons().get("age=20,age=30").contains("age<20,age>20"));
 	}
 
+	@Test
+	public void multipleSameKeys() {
+		Rule r = Rule.buildRule("{a=1,a=2,c=3} => {d=4}", 0.0, 0.0);
+		Assert.assertEquals(r.getAnt().size(), 2);
+		Assert.assertEquals(r.getCons().size(), 1);
+		Assert.assertTrue(r.getAnt().containsKey("a"));
+		Assert.assertTrue(r.getAnt().containsKey("a"));
+		Assert.assertTrue(r.getAnt().containsKey("c"));
+		Assert.assertTrue(r.getAnt().get("a").contains("1"));
+		Assert.assertTrue(r.getAnt().get("a").contains("2"));
+		Assert.assertTrue(r.getAnt().get("c").contains("3"));
+		Assert.assertTrue(r.getCons().containsKey("d"));
+		Assert.assertTrue(r.getCons().get("d").contains("4"));
+	}
+
 }

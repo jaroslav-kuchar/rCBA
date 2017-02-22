@@ -36,14 +36,14 @@ public class RuleEngine {
 		return null;
 	}
 
-	public boolean matchRule(Rule rule, Item item) {		
-//		return item.containsAllEntries(rule.getAnt().entrySet());
-		for (Entry<String, String> entry : rule.getAnt().entrySet()) {
-			if (!entry.getValue().equals(item.get(entry.getKey()))) {
+	public boolean matchRule(Rule rule, Item item) {
+		for(String key:rule.getAnt().keys()){
+			if(!item.get(key).containsAll(rule.getAnt().get(key))){
 				return false;
-			} 
+			}
 		}
 		return true;
+
 	}
 
 }
