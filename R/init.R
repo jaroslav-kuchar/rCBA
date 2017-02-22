@@ -44,6 +44,7 @@ transactionsToFrame <- function(txns){
       df[nrow(df)+1,] <<- row
       NULL
     })
+    colnames(df) <- columnNames
   } else {
     columnNames <- as.character(unique(txns@itemInfo$variables))
     levels <- txns@itemInfo$levels
@@ -53,6 +54,7 @@ transactionsToFrame <- function(txns){
       df[nrow(df)+1,] <<- row
       NULL
     })
+    colnames(df) <- columnNames
   }
   df
 }
