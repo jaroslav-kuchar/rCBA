@@ -1,5 +1,6 @@
 package cz.jkuchar.rcba.rules;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Item {
@@ -22,6 +23,10 @@ public class Item {
 
 	public void put(String key, String value) {
 		this.memory.put(key, value);
+	}
+
+	public List<String> keys(){
+		return new ArrayList<>(memory.keys());
 	}
 
 	public long getId() {

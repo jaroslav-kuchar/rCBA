@@ -31,6 +31,8 @@ RoxygenNote: 5.0.1
 Collate:
     'init.R'
     'build.R'
+    'build2.R'
     'classification.R'
+    'fpgrowth.R'
     'pruning.R'
     'utils.R'

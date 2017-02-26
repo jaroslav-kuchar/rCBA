@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import cz.jkuchar.rcba.pruning.ASet;
 
@@ -81,6 +82,19 @@ public class Rule implements Comparable<Rule> {
 
 	public static Rule buildRule(String text, double confidence, double support) {
 		return buildRule(text, null, confidence, support, 0);
+	}
+
+	public static Rule buildRule(List<Tuple> antecedent, List<Tuple> consequent, double support, double confidence, double lift) {
+		Rule out = new Rule();
+		out.text = antecedent.stream().map(t -> t.getLeft()+"="+t.getRight()).collect(Collectors.joining(",", "{", "}"))+
+				" => "+
+				consequent.stream().map(t -> t.getLeft()+"="+t.getRight()).collect(Collectors.joining(",", "{", "}"));
+		out.confidence = confidence;
+		out.support = support;
+		out.lift = lift;
+		antecedent.stream().forEach(t -> out.antecendent.put(t.getLeft(),t.getRight()));
+		consequent.stream().forEach(t -> out.consequent.put(t.getLeft(),t.getRight()));
+		return out;
 	}
 
 	private void parse(Map<String, Set<String>> meta) {

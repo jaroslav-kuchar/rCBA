@@ -11,8 +11,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
+import cz.jkuchar.rcba.build.RandomSearch;
+import cz.jkuchar.rcba.fpg.AssociationRules;
+import cz.jkuchar.rcba.fpg.FPGrowth;
+import cz.jkuchar.rcba.fpg.FrequentPattern;
 import cz.jkuchar.rcba.pruning.DCBrCBA;
 import cz.jkuchar.rcba.pruning.M1CBA;
 import cz.jkuchar.rcba.pruning.M2CBA;
@@ -20,6 +24,7 @@ import cz.jkuchar.rcba.pruning.Pruning;
 import cz.jkuchar.rcba.rules.Item;
 import cz.jkuchar.rcba.rules.Rule;
 import cz.jkuchar.rcba.rules.RuleEngine;
+import cz.jkuchar.rcba.rules.Tuple;
 
 public class RPruning {
 
@@ -169,6 +174,48 @@ public class RPruning {
 		}
 		re.clear();
 		return predictions;
+	}
+
+	public String[][] fpgrowth(double minSupport, double minConfidence, int maxLength, String consequent) {
+		try {
+			FPGrowth fpGrowth = new FPGrowth();
+			List<List<Tuple>> t = items.stream().map(item -> {
+				List<Tuple> tuples = new ArrayList<>();
+				for(String key:item.keys()){
+					for(String val:item.get(key)){
+						tuples.add(new Tuple(key,val));
+					}
+				}
+				return tuples;
+			}).collect(Collectors.toList());
+			List<FrequentPattern> fps = fpGrowth.run(t, minSupport, maxLength);
+			System.out.println(fps.size());
+			List<Rule> rules = AssociationRules.generate(fps, t.size(), minConfidence, consequent);
+			return rules.stream().map(rule -> new String[]{rule.getText(), Double.toString(rule.getSupport()), Double.toString(rule.getConfidence()), Double.toString(rule.getLift())}).toArray(String[][]::new);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new String[0][4];
+	}
+
+	public String[][] build(String consequent) {
+		try {
+			RandomSearch build = new RandomSearch();
+			List<List<Tuple>> t = items.stream().map(item -> {
+				List<Tuple> tuples = new ArrayList<>();
+				for(String key:item.keys()){
+					for(String val:item.get(key)){
+						tuples.add(new Tuple(key,val));
+					}
+				}
+				return tuples;
+			}).collect(Collectors.toList());
+			List<Rule> rules = build.build(t, consequent);
+			return rules.stream().map(rule -> new String[]{rule.getText(), Double.toString(rule.getSupport()), Double.toString(rule.getConfidence()), Double.toString(rule.getLift())}).toArray(String[][]::new);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new String[0][4];
 	}
 
 }
