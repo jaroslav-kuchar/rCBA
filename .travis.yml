@@ -3,3 +3,5 @@ sudo: required
 cache: packages
 apt_packages:
   - oracle-java8-installer
+before_script:
+  - R CMD javareconf
