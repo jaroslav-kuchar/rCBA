@@ -33,4 +33,3 @@ table(predictions)
 sum(iris$Species==predictions, na.rm=TRUE) / length(predictions)
 
 }
-

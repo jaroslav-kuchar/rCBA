@@ -27,11 +27,11 @@ Imports:
 License: Apache License (== 2.0)
 LazyData: true
 SystemRequirements: Java (>= 8.0)
-RoxygenNote: 5.0.1
-Collate:
+RoxygenNote: 6.0.1
+Collate: 
     'init.R'
     'build.R'
-    'build2.R'
+    'buildFPGrowth.R'
     'classification.R'
     'fpgrowth.R'
     'pruning.R'

@@ -36,4 +36,3 @@ print(nrow(rulesFrame))
 prunedRulesFrame <- pruning(train, rulesFrame, method="m2cba")
 print(nrow(prunedRulesFrame))
 }
-

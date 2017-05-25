@@ -4,18 +4,20 @@
 \alias{fpgrowth}
 \title{FP-Growth mining}
 \usage{
-fpgrowth(train, support = 0.01, confidence = 1, consequent = NULL)
+fpgrowth(train, support = 0.01, confidence = 1, maxLength = 5,
+  consequent = NULL)
 }
 \arguments{
-\item{train}{data.frame or transactions with training dataıı}
+\item{train}{data.frame or transactions with training data}
 
 \item{support}{minimum support}
 
 \item{confidence}{minimum confidence}
+
+\item{maxLength}{maximum length}
 
 \item{consequent}{filter consequent}
 }
 \description{
 FP-Growth mining
 }
-

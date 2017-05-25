@@ -1,6 +1,6 @@
 #' FP-Growth mining
 #'
-#' @param train data.frame or transactions with training dataıı
+#' @param train data.frame or transactions with training data
 #' @param support minimum support
 #' @param confidence minimum confidence
 #' @param maxLength maximum length

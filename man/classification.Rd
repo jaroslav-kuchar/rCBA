@@ -34,4 +34,3 @@ predictions <- classification(train,rulesFrame)
 table(predictions)
 sum(train$Species==predictions,na.rm=TRUE)/length(predictions)
 }
-

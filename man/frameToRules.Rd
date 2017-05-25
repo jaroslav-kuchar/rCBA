@@ -26,4 +26,3 @@ rules <- rCBA::frameToRules(model)
 inspect(rules)
 
 }
-

@@ -1,10 +1,11 @@
-#' build2
+#' FP-Growth based build of the model
 #'
-#' @param train data.frame or transactions with training dataıı
+#' @param train data.frame or transactions with training data
 #' @param className filter className
+#' @return list with parameters and model as data.frame with rules
 #' @export
 #' @include init.R
-build2 <- function(train, className=NULL){
+buildFPGrowth <- function(train, className=NULL){
   init()
   print(paste(Sys.time()," rCBA: initialized",sep=""))
   # init interface
