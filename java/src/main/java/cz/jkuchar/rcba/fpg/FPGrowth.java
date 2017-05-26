@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import cz.jkuchar.rcba.rules.Tuple;
 
@@ -16,6 +18,11 @@ public class FPGrowth {
     private Map<Tuple, Integer> fr;
     private FPTree<Tuple> tree;
     private Map<Tuple, FPTree<Tuple>> header;
+    private int minSupportCount;
+    private int maxLength;
+    private int size;
+
+    private static Logger logger = Logger.getLogger(FPGrowth.class.getName());
 
     /*
     build a tree
@@ -69,8 +76,8 @@ public class FPGrowth {
 
     public List<FrequentPattern> run(List<List<Tuple>> transactions, double minSupport, int maxLength){
         // run and compute min support count instead of relative min support
-//        return run(transactions, new FrequentPattern(1), (int)Math.ceil(minSupport*transactions.size()),true);
-        return run(transactions, new FrequentPattern(1), (int)Math.round(minSupport*transactions.size()), maxLength, true);
+        return run(transactions, new FrequentPattern(1), (int)Math.ceil(minSupport*transactions.size()), maxLength, true);
+//        return run(transactions, new FrequentPattern(1), (int)Math.round(minSupport*transactions.size()), maxLength, true);
     }
 
     public List<FrequentPattern> run(List<List<Tuple>> transactions, int minSupportCount, int maxLength){
@@ -78,6 +85,9 @@ public class FPGrowth {
     }
 
     private List<FrequentPattern> run(List<List<Tuple>> transactions, FrequentPattern pref, int minSupportCount, int maxLength, boolean root){
+        this.minSupportCount = minSupportCount;
+        this.maxLength = maxLength;
+        this.size = transactions.size();
         // patterns for current level of recursion
         List<FrequentPattern> fps = new ArrayList<>();
         // if not empty (=zero level) add to output
@@ -85,12 +95,26 @@ public class FPGrowth {
             fps.add(pref);
         }
 //        TODO: maxLength
-//        if(pref.getPattern().size()<2) {
+        if(pref.getPattern().size()<maxLength) {
+            if(root){
+                logger.log(Level.INFO, "FPG: start");
+            }
             // build tree
             buildTree(transactions, minSupportCount);
+            if(root){
+                logger.log(Level.INFO, "FPG: tree built ("+fr.size()+")");
+            }
+            singlePrefixPath();
+            int i = 0;
             // iterate from less frequent to more frequent items = bottom up
-            for (Tuple tuple : fr.keySet().stream().sorted((a1, a2) -> fr.get(a2).compareTo(fr.get(a1))).collect(Collectors.toList())) {
-//            for (Tuple tuple : fr.keySet().stream().sorted((a1, a2) -> fr.get(a1).compareTo(fr.get(a2))).collect(Collectors.toList())) {
+//            for (Tuple tuple : fr.keySet().stream().sorted((a1, a2) -> fr.get(a2).compareTo(fr.get(a1))).collect(Collectors.toList())) {
+            for (Tuple tuple : fr.keySet().stream().sorted((a1, a2) -> fr.get(a1).compareTo(fr.get(a2))).collect(Collectors.toList())) {
+                if(root){
+                    i++;
+                    if(i%10==0) {
+                        logger.log(Level.INFO, "FPG: "+i+" tuple - " + tuple + "--" + fr.get(tuple));
+                    }
+                }
 //        for(Tuple tuple:fr.keySet()){
                 // extend pattern
                 FrequentPattern p = new FrequentPattern(pref.getPattern(), fr.get(tuple));
@@ -104,8 +128,71 @@ public class FPGrowth {
 //                System.out.println(fps.size());
 //            }
             }
-//        }
+        }
         return fps;
+    }
+
+    protected void singlePrefixPath(){
+        int i = 0;
+        FPTree current = tree;
+        while(current.getChildren().size()==1){
+            i++;
+            current = (FPTree)current.getChildren().get(0);
+        }
+        if(i>0){
+            logger.log(Level.INFO, "SinglePrefixPath: "+i);
+        }
+    }
+
+    protected int estimateSupport(FrequentPattern fp){
+        if(fp.getPattern().size()==0){
+            return this.size;
+        }
+        if(fp.getPattern().size()==1){
+            return this.fr.get(fp.getPattern().get(0));
+        }
+
+        List<Tuple> sorted = fp.getPattern().stream().sorted((a,b) -> fr.get(b).compareTo(fr.get(a))).collect(Collectors.toList());
+        return fr.get(sorted.get(sorted.size()-1));
+
+    }
+
+
+    protected int computeSupport(FrequentPattern fp){
+//        http://wimleers.com/article/fp-growth-powered-association-rule-mining-with-support-for-constraints
+//        https://github.com/wimleers/master-thesis/blob/implementation-milestone-1/code/Analytics/FPGrowth.cpp#L76
+
+        if(fp.getPattern().size()==0){
+            return this.size;
+        }
+        if(fp.getPattern().size()==1){
+            return this.fr.get(fp.getPattern().get(0));
+        }
+
+        FPGrowth fpg = null;
+        List<Tuple> sorted = fp.getPattern().stream().sorted((a,b) -> fr.get(b).compareTo(fr.get(a))).collect(Collectors.toList());
+        for(int i=sorted.size()-1;i>0;i--){
+            Tuple tuple = sorted.get(i);
+//            System.out.println(tuple + "::::" +fr.get(tuple));
+            if(fpg==null){
+                fpg = new FPGrowth();
+                fpg.buildTree(buildConditionalPatternBase(tuple),minSupportCount);
+//                fpg.run(buildConditionalPatternBase(tuple), new FrequentPattern(1), minSupportCount, maxLength, false);
+            } else {
+                List<List<Tuple>> cpb = fpg.buildConditionalPatternBase(tuple);
+                if(cpb.size()==0){
+                    break;
+                }
+                fpg.buildTree(cpb,minSupportCount);
+//                fpg.run(fpg.buildConditionalPatternBase(tuple), new FrequentPattern(1), minSupportCount, maxLength, false);
+            }
+//            System.out.println(fpg.fr);
+        }
+//        System.out.println(fpg.fr);
+        if(fpg.fr.containsKey(sorted.get(0))){
+            return fpg.fr.get(sorted.get(0));
+        }
+        return fpg.fr.entrySet().iterator().next().getValue();
     }
 
     /*
@@ -172,5 +259,7 @@ public class FPGrowth {
     public FPTree getTree(){
         return tree;
     }
+
+    public int getSize() {return size; }
 
 }

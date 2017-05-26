@@ -150,7 +150,7 @@ public class RandomSearch {
             FPGrowth fpGrowth = new FPGrowth();
             List<FrequentPattern> fps = fpGrowth.run(train, minSupport, maxLength);
             System.out.println("Frequent patterns: "+fps.size());
-            List<Rule> rs = AssociationRules.generate(fps, train.size(), minConfidence, consequent);
+            List<Rule> rs = AssociationRules.generate(fps, fpGrowth, train.size(), minConfidence, consequent);
             System.out.println("Rules: "+rs.size());
             if(rs.size()>0) {
                 Pruning pruning = new M2CBA();

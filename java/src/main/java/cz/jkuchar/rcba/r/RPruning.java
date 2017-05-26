@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import cz.jkuchar.rcba.build.RandomSearch;
@@ -36,6 +38,8 @@ public class RPruning {
 	private Map<String, Set<String>> cache;
 	
 	private RuleEngine re = new RuleEngine();
+
+	private static Logger logger = Logger.getLogger(RPruning.class.getName());
 
 	public RPruning() {
 		this.cNames = new String[1];
@@ -178,6 +182,7 @@ public class RPruning {
 
 	public String[][] fpgrowth(double minSupport, double minConfidence, int maxLength, String consequent) {
 		try {
+			logger.log(Level.INFO, "FP-Growth - start");
 			FPGrowth fpGrowth = new FPGrowth();
 			List<List<Tuple>> t = items.stream().map(item -> {
 				List<Tuple> tuples = new ArrayList<>();
@@ -188,9 +193,12 @@ public class RPruning {
 				}
 				return tuples;
 			}).collect(Collectors.toList());
+			logger.log(Level.INFO, "FP-Growth - data converted");
 			List<FrequentPattern> fps = fpGrowth.run(t, minSupport, maxLength);
-			System.out.println(fps.size());
-			List<Rule> rules = AssociationRules.generate(fps, t.size(), minConfidence, consequent);
+			logger.log(Level.INFO, "FP-Growth - frequent patterns: "+fps.size());
+//			System.out.println(fps.size());
+			List<Rule> rules = AssociationRules.generate(fps, fpGrowth, t.size(), minConfidence, consequent);
+			logger.log(Level.INFO, "FP-Growth - rules: "+rules.size());
 			return rules.stream().map(rule -> new String[]{rule.getText(), Double.toString(rule.getSupport()), Double.toString(rule.getConfidence()), Double.toString(rule.getLift())}).toArray(String[][]::new);
 		} catch (Exception e) {
 			e.printStackTrace();

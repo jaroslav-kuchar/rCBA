@@ -3,7 +3,7 @@ package cz.jkuchar.rcba.rules;
 /**
  * @author Jaroslav Kuchar - https://github.com/jaroslav-kuchar
  */
-public class Tuple {
+public class Tuple implements Comparable<Tuple>{
     private String left;
     private String right;
     // represents frequency of items in transactions - increase efficiency and reduces memory requirements
@@ -57,5 +57,10 @@ public class Tuple {
         int result = left != null ? left.hashCode() : 0;
         result = 31 * result + (right != null ? right.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public int compareTo(Tuple o) {
+        return this.toString().compareTo(o.toString());
     }
 }

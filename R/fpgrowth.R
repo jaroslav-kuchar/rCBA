@@ -33,7 +33,7 @@ fpgrowth <- function(train, support = 0.01, confidence = 1.0, maxLength = 5, con
   }
   print(paste(Sys.time()," rCBA: data ",paste(dim(train), collapse="x"),sep=""))
   # perform fpgrowth
-  jPruned <- .jcall(jPruning, "[[Ljava/lang/String;", "fpgrowth", support, confidence, maxLength, consequent, evalArray=FALSE)
+  jPruned <- .jcall(jPruning, "[[Ljava/lang/String;", "fpgrowth", support, confidence, as.integer(maxLength), consequent, evalArray=FALSE)
   print(paste(Sys.time()," rCBA: fpgrowth completed",sep=""))
   rules <- .jevalArray(jPruned,simplify=TRUE)
   colnames(rules) <- c("rules","support","confidence","lift")
