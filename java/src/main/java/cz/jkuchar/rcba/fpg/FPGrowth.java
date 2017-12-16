@@ -1,9 +1,6 @@
 package cz.jkuchar.rcba.fpg;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -11,6 +8,18 @@ import cz.jkuchar.rcba.rules.Tuple;
 
 /**
  * @author Jaroslav Kuchar - https://github.com/jaroslav-kuchar
+ */
+
+
+/**
+ * http://hareenlaks.blogspot.cz/2011/10/how-to-identify-frequent-patterns-from.html
+ * https://cgi.csc.liv.ac.uk/~frans/KDD/Software/FPgrowth/FPtree.java
+ * http://hanj.cs.illinois.edu/pdf/dami04_fptree.pdf
+ * https://github.com/elki-project/elki/blob/master/elki-itemsets/src/main/java/de/lmu/ifi/dbs/elki/algorithm/itemsetmining/FPGrowth.java#L455
+ * https://github.com/biolab/orange3-associate/blob/master/orangecontrib/associate/fpgrowth.py#L294
+ *
+ *
+ * http://elki.dbs.ifi.lmu.de/browser/elki/elki-itemsets/src/main/java/de/lmu/ifi/dbs/elki/algorithm/itemsetmining/FPGrowth.java
  */
 
 public class FPGrowth {
@@ -21,6 +30,7 @@ public class FPGrowth {
     private int minSupportCount;
     private int maxLength;
     private int size;
+    private List<FrequentPattern> ppFP;
 
     private static Logger logger = Logger.getLogger(FPGrowth.class.getName());
 
@@ -88,13 +98,15 @@ public class FPGrowth {
         this.minSupportCount = minSupportCount;
         this.maxLength = maxLength;
         this.size = transactions.size();
+//        System.out.println("ts-->");
+//        System.out.println(transactions);
+//        System.out.println("ts<--");
         // patterns for current level of recursion
         List<FrequentPattern> fps = new ArrayList<>();
         // if not empty (=zero level) add to output
-        if(!pref.getPattern().isEmpty()) {
-            fps.add(pref);
-        }
-//        TODO: maxLength
+//        if(!pref.getPattern().isEmpty()) {
+//            fps.add(pref);
+//        }
         if(pref.getPattern().size()<maxLength) {
             if(root){
                 logger.log(Level.INFO, "FPG: start");
@@ -103,45 +115,106 @@ public class FPGrowth {
             buildTree(transactions, minSupportCount);
             if(root){
                 logger.log(Level.INFO, "FPG: tree built ("+fr.size()+")");
+//                System.out.println(tree);
             }
-            singlePrefixPath();
-            int i = 0;
+//            System.out.println(tree);
+//            singlePrefixPath(pref);
             // iterate from less frequent to more frequent items = bottom up
 //            for (Tuple tuple : fr.keySet().stream().sorted((a1, a2) -> fr.get(a2).compareTo(fr.get(a1))).collect(Collectors.toList())) {
             for (Tuple tuple : fr.keySet().stream().sorted((a1, a2) -> fr.get(a1).compareTo(fr.get(a2))).collect(Collectors.toList())) {
-                if(root){
-                    i++;
-                    if(i%10==0) {
-                        logger.log(Level.INFO, "FPG: "+i+" tuple - " + tuple + "--" + fr.get(tuple));
-                    }
-                }
-//        for(Tuple tuple:fr.keySet()){
+//                System.out.println("Tuple:"+tuple + "--"+fr.get(tuple));
                 // extend pattern
                 FrequentPattern p = new FrequentPattern(pref.getPattern(), fr.get(tuple));
                 p.add(tuple);
-//            TODO: maxLength
-            if(p.getPattern().size()>maxLength) break;
+                fps.add(p);
+
+//                if(p.getPattern().size()>maxLength) break;
                 // add all of recursive computation
                 fps.addAll(new FPGrowth().run(buildConditionalPatternBase(tuple), p, minSupportCount, maxLength, false));
-//            if(root){
-//                System.out.println(tuple);
-//                System.out.println(fps.size());
-//            }
             }
+//            fps = combinePrefixPath(fps, pref);
         }
         return fps;
     }
 
-    protected void singlePrefixPath(){
+    protected void singlePrefixPath(FrequentPattern pref){
         int i = 0;
-        FPTree current = tree;
+        ppFP = new ArrayList<>();
+        List<Tuple> toRemove = new ArrayList<>();
+
+        FPTree<Tuple> current = tree;
         while(current.getChildren().size()==1){
+//            System.out.println(i);
             i++;
             current = (FPTree)current.getChildren().get(0);
+
+            final Tuple t = current.getItem();
+            final int supp = current.getCount();
+
+            List<FrequentPattern> fpstmp = new ArrayList<>();
+
+            for(FrequentPattern fp:ppFP){
+                if(fp.getPattern().size()<maxLength) {
+                    FrequentPattern tmp = fp.getCopy();
+                    tmp.getPattern().add(t.getCopy());
+//                    tmp.getPattern().addAll(pref.getPattern());
+                    tmp.setMinSupportCount(supp);
+                    fpstmp.add(tmp);
+                }
+            }
+            toRemove.add(t);
+//            fr.remove(t);
+            fpstmp.add(new FrequentPattern(new ArrayList<Tuple>(){{add(t.getCopy());}},supp));
+//            FrequentPattern tt = new FrequentPattern(new ArrayList<Tuple>(){{add(t.getCopy());}},supp);
+//            tt.getPattern().addAll(pref.getPattern());
+//            fpstmp.add(tt);
+            ppFP.addAll(fpstmp);
         }
-        if(i>0){
-            logger.log(Level.INFO, "SinglePrefixPath: "+i);
+        if(i>1){
+            for(Tuple t:toRemove){
+                fr.remove(t);
+            }
+//            System.out.println("current "+i);
+//            System.out.println(current);
+            current.setItem(null);
+            tree = current;
+//            System.out.println("-");
+//            System.out.println(ppFP);
+//            System.out.println("----");
+        } else {
+            ppFP.clear();
         }
+    }
+
+    protected List<FrequentPattern> combinePrefixPath(List<FrequentPattern> tree, FrequentPattern pref){
+        List<FrequentPattern> temps = new ArrayList<>();
+        for(FrequentPattern fpt: tree){
+            for(FrequentPattern fps: ppFP){
+                //  && !fpt.getPattern().containsAll(fps.getPattern())
+                if(fpt.getPattern().size()+fps.getPattern().size()+pref.getPattern().size()<maxLength){
+                    FrequentPattern tmp = fpt.getCopy();
+                    tmp.getPattern().addAll(fps.getPattern());
+                    tmp.getPattern().addAll(pref.getPattern());
+                    Set<Tuple> unique = new HashSet<>(tmp.getPattern());
+                    tmp.getPattern().clear();
+                    tmp.getPattern().addAll(unique);
+                    Collections.sort(tmp.getPattern());
+                    temps.add(tmp);
+                }
+            }
+        }
+        tree.addAll(temps);
+        for(FrequentPattern t: ppFP){
+            t.getPattern().addAll(pref.getPattern());
+            Collections.sort(t.getPattern());
+            tree.add(t);
+        }
+//        tree.addAll(ppFP);
+        Set<FrequentPattern> ff = new HashSet<>(tree);
+        tree.clear();
+        tree.addAll(ff);
+        return tree;
+
     }
 
     protected int estimateSupport(FrequentPattern fp){

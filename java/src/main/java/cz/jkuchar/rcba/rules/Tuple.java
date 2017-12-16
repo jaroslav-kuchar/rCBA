@@ -15,6 +15,12 @@ public class Tuple implements Comparable<Tuple>{
         this.count = 1;
     }
 
+    public Tuple(String left, String right, int count) {
+        this.left = left;
+        this.right = right;
+        this.count = count;
+    }
+
     public String getLeft() {
         return left;
     }
@@ -38,6 +44,7 @@ public class Tuple implements Comparable<Tuple>{
     @Override
     public java.lang.String toString() {
         return left + "(" + right + ")";
+//        return left + "(" + right + ")-"+count+"-";
     }
 
     @Override

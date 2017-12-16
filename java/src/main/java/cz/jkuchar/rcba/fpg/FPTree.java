@@ -40,6 +40,10 @@ public class FPTree<T> {
         return this.item;
     }
 
+    public void setItem(T item){
+        this.item = item;
+    }
+
     public void addChild(FPTree<T> tree){
         children.add(tree);
     }
@@ -76,8 +80,8 @@ public class FPTree<T> {
         return "FPTree{" +
                 "item=" + item +
                 ", count=" + count +
-//                ", children={\n" + children +
-//                ", next={\n" + next +
+                ", children={\n" + children +
+                ", next={\n" + next +
                 "\n}";
     }
 
