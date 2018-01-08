@@ -21,7 +21,7 @@ Automatic build of the classification model using the FP-Growth algorithm
 library("rCBA")
 data("iris")
 
-output <- rCBA::buildFPGrowth(iris, "Species")
+output <- rCBA::buildFPGrowth(iris[sample(nrow(iris), 50),], "Species")
 model <- output$model
 
 predictions <- rCBA::classification(iris, model)

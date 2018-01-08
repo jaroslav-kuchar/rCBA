@@ -19,7 +19,7 @@ Conversion of \code{data.frame} to \code{rules} from \code{arules}
 library("rCBA")
 data("iris")
 
-output <- rCBA::buildFPGrowth(iris, "Species")
+output <- rCBA::buildFPGrowth(iris[sample(nrow(iris), 50),], "Species")
 model <- output$model
 
 rules <- rCBA::frameToRules(model)
