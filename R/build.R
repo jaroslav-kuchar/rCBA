@@ -1,16 +1,17 @@
-#' A build classifier function
+#' @title Build classifier function (Apriori-based)
+#' @description Automatic build of the classification model using the Apriori algorithm from the \code{arules}
 #'
-#' @param trainData data.frame or transactions with train data
-#' @param className column with target class - default is the last column
+#' @param trainData \code{data.frame} or \code{transactions} from \code{arules} with input data
+#' @param className column name with the target class - default is the last column
 #' @param pruning performing pruning while building the model
-#' @param sa simulated annealing setting. default values list(temp=100.0, alpha=0.05, tabuRuleLength=5, timeout=10)
+#' @param sa simulated annealing setting. Default values: list(temp=100.0, alpha=0.05, tabuRuleLength=5, timeout=10)
 #' @return list with parameters and model as data.frame with rules
 #' @export
 #' @examples
 #' library("rCBA")
 #' data("iris")
 #'
-#' output <- rCBA::build(iris)
+#' output <- rCBA::build(iris,sa = list(alpha=0.5)) # speeding up the cooling
 #' model <- output$model
 #'
 #' predictions <- rCBA::classification(iris, model)
@@ -204,15 +205,23 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 	rules <- NULL
 	# timeout limit
 	tryCatch({
-		rules <- .processWithTimeout(function() apriori(txns, parameter = list(confidence = conf, support= supp, maxlen=maxRuleLen), appearance = list(rhs = paste(className,unique(trainSet[[className]][!is.na(trainSet[[className]])]),sep="="), default="lhs")), timeout=to)
+		# rules <- .processWithTimeout(function()
+		rules <- withTimeout({
+		  apriori(txns, parameter = list(confidence = conf, support= supp, maxlen=maxRuleLen), appearance = list(rhs = paste(className,unique(trainSet[[className]][!is.na(trainSet[[className]])]),sep="="), default="lhs"))
+		#  , timeout=to)
+		}, timeout = to, onTimeout="error");
 	}, TimeoutException = function(e){
 		print("TimeoutException")
 	}, error=function(ex) {
-		if (conditionMessage(ex) == "timeout") {
-		 	print("TimeoutException")
-  		} else {
-     		stop(ex)
-  		}
+	  if (!"TimeoutException"  %in% class(ex)) {
+	    stop(ex)
+	  }
+	  message("Timeout")
+		# if (conditionMessage(ex) == "timeout") {
+		# 	print("TimeoutException")
+  	#	} else {
+    # 		stop(ex)
+  	#	}
 	})
 	# mining failed or too many genereated rules
 	if(is.null(rules) || length(rules)>1e5) {

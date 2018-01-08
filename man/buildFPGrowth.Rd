@@ -2,18 +2,30 @@
 % Please edit documentation in R/buildFPGrowth.R
 \name{buildFPGrowth}
 \alias{buildFPGrowth}
-\title{FP-Growth based build of the model}
+\title{Build classifier function (FP-Growth-based)}
 \usage{
 buildFPGrowth(train, className = NULL)
 }
 \arguments{
-\item{train}{data.frame or transactions with training data}
+\item{train}{\code{data.frame} or \code{transactions} from \code{arules} with input data}
 
-\item{className}{filter className}
+\item{className}{column name with the target class - default is the last column}
 }
 \value{
 list with parameters and model as data.frame with rules
 }
 \description{
-FP-Growth based build of the model
+Automatic build of the classification model using the FP-Growth algorithm
+}
+\examples{
+library("rCBA")
+data("iris")
+
+output <- rCBA::buildFPGrowth(iris, "Species")
+model <- output$model
+
+predictions <- rCBA::classification(iris, model)
+table(predictions)
+sum(iris$Species==predictions, na.rm=TRUE) / length(predictions)
+
 }

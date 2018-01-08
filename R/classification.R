@@ -1,7 +1,7 @@
 #' A classification function
 #'
-#' @param test data.frame or transactions with test data
-#' @param rules data.frame with rules
+#' @param test \code{data.frame} or \code{transactions} from \code{arules} with input data
+#' @param rules \code{data.frame} with rules
 #' @return vector with classifications
 #' @export
 #' @examples
@@ -17,7 +17,7 @@
 #'	appearance = list(rhs=c("Species=setosa", "Species=versicolor", "Species=virginica"),default="lhs"))
 #' rulesFrame <- as(rules,"data.frame")
 #'
-#' predictions <- classification(train,rulesFrame)
+#' predictions <- rCBA::classification(train,rulesFrame)
 #' table(predictions)
 #' sum(train$Species==predictions,na.rm=TRUE)/length(predictions)
 #' @include init.R

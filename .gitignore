@@ -14,3 +14,5 @@ vignettes/*.pdf
 
 ..Rcheck
 .Rproj.user
+
+.vagrant

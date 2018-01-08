@@ -1,9 +1,21 @@
-#' FP-Growth based build of the model
+#' @title Build classifier function (FP-Growth-based)
+#' @description Automatic build of the classification model using the FP-Growth algorithm
 #'
-#' @param train data.frame or transactions with training data
-#' @param className filter className
+#' @param train \code{data.frame} or \code{transactions} from \code{arules} with input data
+#' @param className column name with the target class - default is the last column
 #' @return list with parameters and model as data.frame with rules
 #' @export
+#' @examples
+#' library("rCBA")
+#' data("iris")
+#'
+#' output <- rCBA::buildFPGrowth(iris, "Species")
+#' model <- output$model
+#'
+#' predictions <- rCBA::classification(iris, model)
+#' table(predictions)
+#' sum(iris$Species==predictions, na.rm=TRUE) / length(predictions)
+#'
 #' @include init.R
 buildFPGrowth <- function(train, className=NULL){
   init()

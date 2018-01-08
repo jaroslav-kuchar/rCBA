@@ -1,23 +1,27 @@
 # package created using:
 # http://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/
-#' @import rJava arules R.utils TunePareto
+#' @import rJava arules R.utils TunePareto parallel
 #' @importFrom utils write.table modifyList
 #' @importFrom stats runif setNames
 #' @importFrom methods as is
 
 .onLoad <- function(libname, pkgname ){
-	.jinit()
-	if(J("java.lang.System")$getProperty("java.version") < "1.8.0") {
-		stop("rCBA requires Java >= 1.8 ", call. = FALSE)
-	}
+  .jinit()
+  jv <- .jcall("java/lang/System", "S", "getProperty", "java.runtime.version")
+  if(substr(jv, 1L, 1L) == "1") {
+    jvn <- as.numeric(paste0(strsplit(jv, "[.]")[[1L]][1:2], collapse = "."))
+    if(jvn < 1.8) stop("Java 8 is needed for this package but not available")
+  }
 }
 
 init <- function(){
 	# initialize rJava
   .jinit()
-	if(J("java.lang.System")$getProperty("java.version") < "1.8.0") {
-		stop("rCBA requires Java >= 1.8 ", call. = FALSE)
-	}
+  jv <- .jcall("java/lang/System", "S", "getProperty", "java.runtime.version")
+  if(substr(jv, 1L, 1L) == "1") {
+    jvn <- as.numeric(paste0(strsplit(jv, "[.]")[[1L]][1:2], collapse = "."))
+    if(jvn < 1.8) stop("Java 8 is needed for this package but not available")
+  }
 	# add java implementation to classpath
 	.jaddClassPath(dir(paste(path.package("rCBA"), "/java/", sep=""), full.names=TRUE))
 	# add jar archives to classpath

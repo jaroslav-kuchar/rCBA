@@ -7,14 +7,14 @@
 pruning(train, rules, method = "m2cba")
 }
 \arguments{
-\item{train}{data.frame or transactions with training data}
+\item{train}{trainData \code{data.frame} or \code{transactions} from \code{arules} with input data}
 
-\item{rules}{data.frame with rules}
+\item{rules}{\code{data.frame} with rules}
 
 \item{method}{pruning method m2cba(default)|m1cba|dcbrcba}
 }
 \value{
-data.frame with pruned rules
+\code{data.frame} with pruned rules
 }
 \description{
 A Pruning function
@@ -33,6 +33,6 @@ appearance = list(rhs=c("Species=setosa", "Species=versicolor", "Species=virgini
 rulesFrame <- as(rules,"data.frame")
 
 print(nrow(rulesFrame))
-prunedRulesFrame <- pruning(train, rulesFrame, method="m2cba")
+prunedRulesFrame <- rCBA::pruning(train, rulesFrame, method="m2cba")
 print(nrow(prunedRulesFrame))
 }

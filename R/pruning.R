@@ -1,9 +1,9 @@
 #' A Pruning function
 #'
-#' @param train data.frame or transactions with training data
-#' @param rules data.frame with rules
+#' @param train trainData \code{data.frame} or \code{transactions} from \code{arules} with input data
+#' @param rules \code{data.frame} with rules
 #' @param method pruning method m2cba(default)|m1cba|dcbrcba
-#' @return data.frame with pruned rules
+#' @return \code{data.frame} with pruned rules
 #' @export
 #' @examples
 #' library("arules")
@@ -19,7 +19,7 @@
 #' rulesFrame <- as(rules,"data.frame")
 #'
 #' print(nrow(rulesFrame))
-#' prunedRulesFrame <- pruning(train, rulesFrame, method="m2cba")
+#' prunedRulesFrame <- rCBA::pruning(train, rulesFrame, method="m2cba")
 #' print(nrow(prunedRulesFrame))
 #' @include init.R
 pruning <- function(train, rules, method="m2cba"){

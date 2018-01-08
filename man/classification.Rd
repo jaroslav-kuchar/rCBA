@@ -7,9 +7,9 @@
 classification(test, rules)
 }
 \arguments{
-\item{test}{data.frame or transactions with test data}
+\item{test}{\code{data.frame} or \code{transactions} from \code{arules} with input data}
 
-\item{rules}{data.frame with rules}
+\item{rules}{\code{data.frame} with rules}
 }
 \value{
 vector with classifications
@@ -30,7 +30,7 @@ rules = apriori(txns, parameter=list(support=0.03, confidence=0.03, minlen=2),
 appearance = list(rhs=c("Species=setosa", "Species=versicolor", "Species=virginica"),default="lhs"))
 rulesFrame <- as(rules,"data.frame")
 
-predictions <- classification(train,rulesFrame)
+predictions <- rCBA::classification(train,rulesFrame)
 table(predictions)
 sum(train$Species==predictions,na.rm=TRUE)/length(predictions)
 }

@@ -2,30 +2,30 @@
 % Please edit documentation in R/build.R
 \name{build}
 \alias{build}
-\title{A build classifier function}
+\title{Build classifier function (Apriori-based)}
 \usage{
 build(trainData, className = NA, pruning = TRUE, sa = list())
 }
 \arguments{
-\item{trainData}{data.frame or transactions with train data}
+\item{trainData}{\code{data.frame} or \code{transactions} from \code{arules} with input data}
 
-\item{className}{column with target class - default is the last column}
+\item{className}{column name with the target class - default is the last column}
 
 \item{pruning}{performing pruning while building the model}
 
-\item{sa}{simulated annealing setting. default values list(temp=100.0, alpha=0.05, tabuRuleLength=5, timeout=10)}
+\item{sa}{simulated annealing setting. Default values: list(temp=100.0, alpha=0.05, tabuRuleLength=5, timeout=10)}
 }
 \value{
 list with parameters and model as data.frame with rules
 }
 \description{
-A build classifier function
+Automatic build of the classification model using the Apriori algorithm from the \code{arules}
 }
 \examples{
 library("rCBA")
 data("iris")
 
-output <- rCBA::build(iris)
+output <- rCBA::build(iris,sa = list(alpha=0.5)) # speeding up the cooling
 model <- output$model
 
 predictions <- rCBA::classification(iris, model)

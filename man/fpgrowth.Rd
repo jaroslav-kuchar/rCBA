@@ -2,13 +2,13 @@
 % Please edit documentation in R/fpgrowth.R
 \name{fpgrowth}
 \alias{fpgrowth}
-\title{FP-Growth mining}
+\title{FP-Growth}
 \usage{
 fpgrowth(train, support = 0.01, confidence = 1, maxLength = 5,
   consequent = NULL)
 }
 \arguments{
-\item{train}{data.frame or transactions with training data}
+\item{train}{\code{data.frame} or \code{transactions} from \code{arules} with input data}
 
 \item{support}{minimum support}
 
@@ -16,8 +16,29 @@ fpgrowth(train, support = 0.01, confidence = 1, maxLength = 5,
 
 \item{maxLength}{maximum length}
 
-\item{consequent}{filter consequent}
+\item{consequent}{filter consequent - column name with consequent/target class}
 }
 \description{
-FP-Growth mining
+FP-Growth algorithm - Jiawei Han, Jian Pei, and Yiwen Yin.
+Mining frequent patterns without candidate generation. SIGMOD Rec. 29, 2 (2000) <doi:10.1145/335191.335372>
+}
+\examples{
+library("rCBA")
+data("iris")
+
+train <- sapply(iris,as.factor)
+train <- data.frame(train, check.names=FALSE)
+txns <- as(train,"transactions")
+
+rules = rCBA::fpgrowth(txns, support=0.03, confidence=0.03, maxLength=2, consequent="Species")
+rulesFrame <- as(rules,"data.frame")
+
+predictions <- rCBA::classification(train,rulesFrame)
+table(predictions)
+sum(train$Species==predictions,na.rm=TRUE)/length(predictions)
+
+prunedRulesFrame <- rCBA::pruning(train, rulesFrame, method="m2cba")
+predictions <- rCBA::classification(train, prunedRulesFrame)
+table(predictions)
+sum(train$Species==predictions,na.rm=TRUE)/length(predictions)
 }

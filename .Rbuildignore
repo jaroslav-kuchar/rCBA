@@ -7,3 +7,6 @@ rCBA.Rproj
 ^.*\.Rproj$
 ^\.Rproj\.user$
 .travis.yml
+.vagrant
+Vagrantfile
+provision.sh

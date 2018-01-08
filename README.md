@@ -26,6 +26,8 @@ install.packages('rCBA',dependencies=TRUE, repos="http://cran.us.r-project.org")
 
 ## Development Version Installation
 
+### Local installation
+
 Prerequisites:
 
 - Java 8
@@ -51,6 +53,19 @@ rCBA installation:
 library("devtools")
 devtools::install_github("jaroslav-kuchar/rCBA")
 ```
+
+### RStudio Server development environment
+
+Vagrant virtual server:
+
+```bash
+vagrant up
+```
+
+Rstudio server:
+
+  - http://localhost:8787/
+  - vagrant:vagrant
 
 ## Usage
 
@@ -110,9 +125,46 @@ table(predictions)
 sum(train$Species==predictions,na.rm=TRUE)/length(predictions)
 ```
 
+Example 4 - fp-growth + classification: 
+
+```R
+library("rCBA")
+data("iris")
+
+train <- sapply(iris,as.factor)
+train <- data.frame(train, check.names=FALSE)
+txns <- as(train,"transactions")
+
+rules = fpgrowth(txns, support=0.03, confidence=0.03, maxlen=2, consequent="Species")
+rulesFrame <- as(rules,"data.frame")
+
+predictions <- rCBA::classification(train,rulesFrame)
+table(predictions)
+sum(train$Species==predictions,na.rm=TRUE)/length(predictions)
+
+prunedRulesFrame <- rCBA::pruning(train, rulesFrame, method="m2cba")
+predictions <- rCBA::classification(train, prunedRulesFrame)
+table(predictions)
+sum(train$Species==predictions,na.rm=TRUE)/length(predictions)
+```
+
+Example 5 - fp-growth automatic build: 
+```R
+library("rCBA")
+data("iris")
+
+output <- rCBA::buildFPGrowth(iris, "Species")
+model <- output$model
+
+predictions <- rCBA::classification(iris, model)
+table(predictions)
+sum(iris$Species==predictions, na.rm=TRUE) / length(predictions)
+```
+
 ## Contributors
 
 - Jaroslav Kuchař (https://github.com/jaroslav-kuchar)
+- Tomáš Kliegr (https://github.com/kliegr)
 
 ## Licence
 

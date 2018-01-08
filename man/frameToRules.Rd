@@ -2,24 +2,24 @@
 % Please edit documentation in R/utils.R
 \name{frameToRules}
 \alias{frameToRules}
-\title{Conversion of data.frame to rules from arules}
+\title{Conversion of \code{data.frame} to \code{rules} from \code{arules}}
 \usage{
 frameToRules(model)
 }
 \arguments{
-\item{model}{data.frame with rules}
+\item{model}{\code{data.frame} with rules}
 }
 \value{
-arules rules representation
+\code{arules} \code{rules} representation
 }
 \description{
-Conversion of data.frame to rules from arules
+Conversion of \code{data.frame} to \code{rules} from \code{arules}
 }
 \examples{
 library("rCBA")
 data("iris")
 
-output <- rCBA::build(iris)
+output <- rCBA::buildFPGrowth(iris, "Species")
 model <- output$model
 
 rules <- rCBA::frameToRules(model)

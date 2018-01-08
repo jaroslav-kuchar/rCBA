@@ -1,13 +1,13 @@
-#' Conversion of data.frame to rules from arules
+#' Conversion of \code{data.frame} to \code{rules} from \code{arules}
 #'
-#' @param model data.frame with rules
-#' @return arules rules representation
+#' @param model \code{data.frame} with rules
+#' @return \code{arules} \code{rules} representation
 #' @export
 #' @examples
 #' library("rCBA")
 #' data("iris")
 #'
-#' output <- rCBA::build(iris)
+#' output <- rCBA::buildFPGrowth(iris, "Species")
 #' model <- output$model
 #'
 #' rules <- rCBA::frameToRules(model)
