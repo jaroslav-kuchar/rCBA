@@ -9,7 +9,7 @@
 #' library("rCBA")
 #' data("iris")
 #'
-#' output <- rCBA::buildFPGrowth(iris, "Species")
+#' output <- rCBA::buildFPGrowth(iris[sample(nrow(iris), 50),], "Species")
 #' model <- output$model
 #'
 #' predictions <- rCBA::classification(iris, model)
