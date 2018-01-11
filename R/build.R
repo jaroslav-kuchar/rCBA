@@ -176,7 +176,7 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 	output$maxlen <- bestSolution[3]
 
 	# use best parameters
-	rules <- apriori(as(trainData, "transactions"), parameter = list(confidence = bestSolution[1], support= bestSolution[2], maxlen=bestSolution[3]), appearance = list(rhs = paste(className,unique(trainData[[className]][!is.na(trainData[[className]])]),sep="="), default="lhs"))
+	rules <- suppressWarnings(apriori(as(trainData, "transactions"), parameter = list(confidence = bestSolution[1], support= bestSolution[2], maxlen=bestSolution[3]), appearance = list(rhs = paste(className,unique(trainData[[className]][!is.na(trainData[[className]])]),sep="="), default="lhs")))
 	rulesFrame <- as(rules, "data.frame")
 	print(paste(Sys.time()," rCBA: rules ",nrow(rulesFrame),"x",ncol(rulesFrame),sep=""))
 	output$initialSize <- nrow(rulesFrame)
@@ -189,7 +189,7 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 				rulesFrame <- pruning(trainData, rulesFrame, method="m2cba")
 				repeating <- FALSE
 			},error=function(e){
- 				print("pruning exception")
+			  print(paste("pruning exception:  ",e))
  			})
 		}
 	}
@@ -207,7 +207,7 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 	tryCatch({
 		# rules <- .processWithTimeout(function()
 		rules <- withTimeout({
-		  apriori(txns, parameter = list(confidence = conf, support= supp, maxlen=maxRuleLen), appearance = list(rhs = paste(className,unique(trainSet[[className]][!is.na(trainSet[[className]])]),sep="="), default="lhs"))
+		  suppressWarnings(apriori(txns, parameter = list(confidence = conf, support= supp, maxlen=maxRuleLen), appearance = list(rhs = paste(className,unique(trainSet[[className]][!is.na(trainSet[[className]])]),sep="="), default="lhs")))
 		#  , timeout=to)
 		}, timeout = to, onTimeout="error");
 	}, TimeoutException = function(e){
