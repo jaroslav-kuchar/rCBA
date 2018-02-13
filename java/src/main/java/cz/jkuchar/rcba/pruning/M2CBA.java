@@ -262,7 +262,7 @@ public class M2CBA implements Pruning {
 
 		C = C.subList(0, minErrorRid);
 		Collections.sort(C);
-		if (C.size() > 0 && C.get(C.size() - 1).getDefaultRule() != null) {
+		if (C.size() > 0 && C.get(C.size() - 1).getDefaultRule() != null && C.get(C.size() - 1).getAnt().size()>0) {
 			C.add(C.get(C.size() - 1).getDefaultRule());
 
 			Rule dRule = C.get(C.size() - 1);
