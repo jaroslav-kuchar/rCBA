@@ -24,7 +24,8 @@
 #' @include init.R
 pruning <- function(train, rules, method="m2cba"){
 	init()
-	print(paste(Sys.time()," rCBA: initialized",sep=""))
+	message(paste(Sys.time()," rCBA: initialized",sep=""))
+	start.time <- proc.time()
 	# init interface
 	jPruning <- .jnew("cz/jkuchar/rcba/r/RPruning")
 
@@ -46,25 +47,31 @@ pruning <- function(train, rules, method="m2cba"){
   	trainArray <- .jarray(lapply(trainConverted, .jarray))
   	.jcall(jPruning,,"addDataFrame",trainArray)
 	}
-	print(paste(Sys.time()," rCBA: data ",paste(dim(train), collapse="x"),sep=""))
+	message(paste(Sys.time()," rCBA: data ",paste(dim(train), collapse="x"),sep=""))
+	message (paste("\t took:", round((proc.time() - start.time)[3], 2), " s"))
 
 	# add rules
+	start.time <- proc.time()
 	rulesFrame <- as(rules,"data.frame")
 	rulesFrame$rules <- as.character(rulesFrame$rules)
 	rulesArray <- .jarray(lapply(rulesFrame, .jarray))
 	.jcall(jPruning,,"addRuleFrame",rulesArray)
+	message(paste(Sys.time()," rCBA: rules ",nrow(rules),"x",ncol(rules),sep=""))
+	message (paste("\t took:", round((proc.time() - start.time)[3], 2), " s"))
 
-	print(paste(Sys.time()," rCBA: rules ",nrow(rules),"x",ncol(rules),sep=""))
 	# perform pruning
+	start.time <- proc.time()
 	jPruned <- .jcall(jPruning, "[Lcz/jkuchar/rcba/rules/Rule;", "prune", as.character(method))
-	print(paste(Sys.time()," rCBA: pruning completed",sep=""))
+	message(paste(Sys.time()," rCBA: pruning completed",sep=""))
 	# build dataframe
 	pruned <- data.frame(rules=rep("", 0), support=rep(0.0, 0), confidence=rep(0.0, 0), lift=rep(0.0, 0), stringsAsFactors=FALSE)
 	for(jRule in jPruned){
 		pruned[nrow(pruned) + 1,] <- c(.jcall(jRule, "S", "getText"), .jcall(jRule, "D", "getSupport"), .jcall(jRule, "D", "getConfidence"), .jcall(jRule, "D", "getLift"))
 	}
+	jPruned <- NULL
 	J("java.lang.System")$gc()
-	print(paste(Sys.time()," rCBA: pruned rules ",nrow(pruned),"x",ncol(pruned),sep=""))
+	message(paste(Sys.time()," rCBA: pruned rules ",nrow(pruned),"x",ncol(pruned),sep=""))
+	message (paste("\t took:", round((proc.time() - start.time)[3], 2), " s"))
 	pruned$support <- as.double(pruned$support)
 	pruned$confidence <- as.double(pruned$confidence)
 	pruned$lift <- as.double(pruned$lift)
