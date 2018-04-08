@@ -4,7 +4,7 @@
 \alias{pruning}
 \title{A Pruning function}
 \usage{
-pruning(train, rules, method = "m2cba")
+pruning(train, rules, method = "m2cba", verbose = TRUE)
 }
 \arguments{
 \item{train}{trainData \code{data.frame} or \code{transactions} from \code{arules} with input data}
@@ -12,6 +12,8 @@ pruning(train, rules, method = "m2cba")
 \item{rules}{\code{data.frame} with rules}
 
 \item{method}{pruning method m2cba(default)|m1cba|dcbrcba}
+
+\item{verbose}{verbose indicator}
 }
 \value{
 \code{data.frame} with pruned rules

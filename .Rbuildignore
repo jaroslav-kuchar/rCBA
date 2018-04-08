@@ -10,3 +10,4 @@ rCBA.Rproj
 .vagrant
 Vagrantfile
 provision.sh
+tmp

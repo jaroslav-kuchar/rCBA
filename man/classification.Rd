@@ -4,12 +4,14 @@
 \alias{classification}
 \title{A classification function}
 \usage{
-classification(test, rules)
+classification(test, rules, verbose = TRUE)
 }
 \arguments{
 \item{test}{\code{data.frame} or \code{transactions} from \code{arules} with input data}
 
 \item{rules}{\code{data.frame} with rules}
+
+\item{verbose}{verbose indicator}
 }
 \value{
 vector with classifications

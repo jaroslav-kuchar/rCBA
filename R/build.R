@@ -176,7 +176,7 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 	output$maxlen <- bestSolution[3]
 
 	# use best parameters
-	rules <- suppressWarnings(apriori(as(trainData, "transactions"), parameter = list(confidence = bestSolution[1], support= bestSolution[2], maxlen=bestSolution[3]), appearance = list(rhs = paste(className,unique(trainData[[className]][!is.na(trainData[[className]])]),sep="="), default="lhs")))
+	rules <- suppressWarnings(apriori(as(trainData, "transactions"), parameter = list(confidence = bestSolution[1], support= bestSolution[2], maxlen=bestSolution[3]), appearance = list(rhs = paste(className,unique(trainData[[className]][!is.na(trainData[[className]])]),sep="="), default="lhs"), control = list(verbose = FALSE)))
 	rulesFrame <- as(rules, "data.frame")
 	print(paste(Sys.time()," rCBA: rules ",nrow(rulesFrame),"x",ncol(rulesFrame),sep=""))
 	output$initialSize <- nrow(rulesFrame)
@@ -186,9 +186,10 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 		repeating <- TRUE
 		while(repeating==TRUE){
 			tryCatch({
-				rulesFrame <- pruning(trainData, rulesFrame, method="m2cba")
+				rulesFrame <- pruning(trainData, rulesFrame, method="m2cba", verbose = FALSE)
 				repeating <- FALSE
 			},error=function(e){
+			  print(paste(e))
 			  print(paste("pruning exception:  ",e))
  			})
 		}
@@ -207,7 +208,7 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 	tryCatch({
 		# rules <- .processWithTimeout(function()
 		rules <- withTimeout({
-		  suppressWarnings(apriori(txns, parameter = list(confidence = conf, support= supp, maxlen=maxRuleLen), appearance = list(rhs = paste(className,unique(trainSet[[className]][!is.na(trainSet[[className]])]),sep="="), default="lhs")))
+		  suppressWarnings(apriori(txns, parameter = list(confidence = conf, support= supp, maxlen=maxRuleLen), appearance = list(rhs = paste(className,unique(trainSet[[className]][!is.na(trainSet[[className]])]),sep="="), default="lhs"), control = list(verbose = FALSE)))
 		#  , timeout=to)
 		}, timeout = to, onTimeout="error");
 	}, TimeoutException = function(e){
@@ -234,7 +235,7 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 		repeating <- TRUE
 		while(repeating==TRUE){
 			tryCatch({
-				rulesFrame <- pruning(trainSet, rulesFrame, method="m2cba")
+				rulesFrame <- pruning(trainSet, rulesFrame, method="m2cba", verbose = FALSE)
 				repeating <- FALSE
 			},error=function(e){
  				print("pruning exception")
@@ -243,7 +244,7 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 	}
 	# classification and compute accuracy
 	if(nrow(rulesFrame)>0){
-		predictions <- classification(testSet, rulesFrame)
+		predictions <- classification(testSet, rulesFrame, verbose = FALSE)
 		accuracy <- sum(as.character(testSet[[className]])==predictions, na.rm=TRUE) / length(predictions)
 		return(accuracy)
 	} else {
