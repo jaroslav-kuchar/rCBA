@@ -7,6 +7,7 @@
 #' @param confidence minimum confidence
 #' @param maxLength maximum length
 #' @param consequent filter consequent - column name with consequent/target class
+#' @param verbose verbose indicator
 #' @export
 #' @examples
 #' library("rCBA")
@@ -21,16 +22,19 @@
 #'
 #' predictions <- rCBA::classification(train,rulesFrame)
 #' table(predictions)
-#' sum(train$Species==predictions,na.rm=TRUE)/length(predictions)
+#' sum(as.character(train$Species)==as.character(predictions),na.rm=TRUE)/length(predictions)
 #'
 #' prunedRulesFrame <- rCBA::pruning(train, rulesFrame, method="m2cba")
 #' predictions <- rCBA::classification(train, prunedRulesFrame)
 #' table(predictions)
-#' sum(train$Species==predictions,na.rm=TRUE)/length(predictions)
+#' sum(as.character(train$Species)==as.character(predictions),na.rm=TRUE)/length(predictions)
 #' @include init.R
-fpgrowth <- function(train, support = 0.01, confidence = 1.0, maxLength = 5, consequent=NULL){
+fpgrowth <- function(train, support = 0.01, confidence = 1.0, maxLength = 5, consequent=NULL, verbose = TRUE){
   init()
-  print(paste(Sys.time()," rCBA: initialized",sep=""))
+  if(verbose){
+    message(paste(Sys.time()," rCBA: initialized",sep=""))
+    start.time <- proc.time()
+  }
   # init interface
   jPruning <- .jnew("cz/jkuchar/rcba/r/RPruning")
 
@@ -52,15 +56,22 @@ fpgrowth <- function(train, support = 0.01, confidence = 1.0, maxLength = 5, con
     trainArray <- .jarray(lapply(trainConverted, .jarray))
     .jcall(jPruning,,"addDataFrame",trainArray)
   }
-  print(paste(Sys.time()," rCBA: data ",paste(dim(train), collapse="x"),sep=""))
+  if(verbose){
+    message(paste(Sys.time()," rCBA: data ",paste(dim(train), collapse="x"),sep=""))
+    message (paste("\t took:", round((proc.time() - start.time)[3], 2), " s"))
+  }
+  start.time <- proc.time()
   # perform fpgrowth
   jPruned <- .jcall(jPruning, "[[Ljava/lang/String;", "fpgrowth", support, confidence, as.integer(maxLength), consequent, evalArray=FALSE)
-  print(paste(Sys.time()," rCBA: fpgrowth completed",sep=""))
+  # print(paste(Sys.time()," rCBA: fpgrowth completed",sep=""))
   rules <- .jevalArray(jPruned,simplify=TRUE)
   colnames(rules) <- c("rules","support","confidence","lift")
   pruned<-as.data.frame(rules,stringsAsFactors=FALSE)
   J("java.lang.System")$gc()
-  print(paste(Sys.time()," rCBA: mined rules ",nrow(pruned),"x",ncol(pruned),sep=""))
+  if(verbose){
+    message(paste(Sys.time()," rCBA: rules ",nrow(pruned),"x",ncol(pruned),sep=""))
+    message (paste("\t took:", round((proc.time() - start.time)[3], 2), " s"))
+  }
   pruned$support <- as.double(pruned$support)
   pruned$confidence <- as.double(pruned$confidence)
   pruned$lift <- as.double(pruned$lift)

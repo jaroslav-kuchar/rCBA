@@ -20,7 +20,7 @@
 #'
 #' predictions <- rCBA::classification(train,rulesFrame)
 #' table(predictions)
-#' sum(train$Species==predictions,na.rm=TRUE)/length(predictions)
+#' sum(as.character(train$Species)==as.character(predictions),na.rm=TRUE)/length(predictions)
 #' @include init.R
 classification <- function(test, rules, verbose = TRUE){
 	# init java
@@ -74,6 +74,6 @@ classification <- function(test, rules, verbose = TRUE){
 	  message (paste("\t took:", round((proc.time() - start.time)[3], 2), " s"))
 	}
 	# build output
-	jResult
+	factor(jResult)
 }
 

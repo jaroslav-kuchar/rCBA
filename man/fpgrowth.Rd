@@ -5,7 +5,7 @@
 \title{FP-Growth}
 \usage{
 fpgrowth(train, support = 0.01, confidence = 1, maxLength = 5,
-  consequent = NULL)
+  consequent = NULL, verbose = TRUE)
 }
 \arguments{
 \item{train}{\code{data.frame} or \code{transactions} from \code{arules} with input data}
@@ -17,6 +17,8 @@ fpgrowth(train, support = 0.01, confidence = 1, maxLength = 5,
 \item{maxLength}{maximum length}
 
 \item{consequent}{filter consequent - column name with consequent/target class}
+
+\item{verbose}{verbose indicator}
 }
 \description{
 FP-Growth algorithm - Jiawei Han, Jian Pei, and Yiwen Yin.
@@ -35,10 +37,10 @@ rulesFrame <- as(rules,"data.frame")
 
 predictions <- rCBA::classification(train,rulesFrame)
 table(predictions)
-sum(train$Species==predictions,na.rm=TRUE)/length(predictions)
+sum(as.character(train$Species)==as.character(predictions),na.rm=TRUE)/length(predictions)
 
 prunedRulesFrame <- rCBA::pruning(train, rulesFrame, method="m2cba")
 predictions <- rCBA::classification(train, prunedRulesFrame)
 table(predictions)
-sum(train$Species==predictions,na.rm=TRUE)/length(predictions)
+sum(as.character(train$Species)==as.character(predictions),na.rm=TRUE)/length(predictions)
 }

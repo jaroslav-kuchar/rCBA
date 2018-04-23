@@ -5,6 +5,7 @@
 #' @param className column name with the target class - default is the last column
 #' @param pruning performing pruning while building the model
 #' @param sa simulated annealing setting. Default values: list(temp=100.0, alpha=0.05, tabuRuleLength=5, timeout=10)
+#' @param verbose verbose indicator
 #' @return list with parameters and model as data.frame with rules
 #' @export
 #' @examples
@@ -16,11 +17,14 @@
 #'
 #' predictions <- rCBA::classification(iris, model)
 #' table(predictions)
-#' sum(iris$Species==predictions, na.rm=TRUE) / length(predictions)
+#' sum(as.character(iris$Species)==as.character(predictions), na.rm=TRUE) / length(predictions)
 #'
 #' @include init.R
-build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
-	print(paste(Sys.time(), " rCBA: initialized", sep=""))
+build <- function(trainData, className=NA, pruning=TRUE, sa=list(), verbose = TRUE){
+  if(verbose){
+    message(paste(Sys.time()," rCBA: initialized",sep=""))
+    start.time <- proc.time()
+  }
 
   # convert data to frame if passed as transactions
   if(is(trainData,"transactions")){
@@ -50,7 +54,12 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 	# convert the trainset to transactions
 	txns <- as(trainSet, "transactions")
 
-	print(paste(Sys.time()," rCBA: dataframe ",nrow(trainData),"x",ncol(trainData),sep=""))
+	if(verbose){
+	  message(paste(Sys.time()," rCBA: data ",paste(dim(trainData), collapse="x"),sep=""))
+	  message (paste("\t took:", round((proc.time() - start.time)[3], 2), " s"))
+	}
+	start.time <- proc.time()
+
 
 	# initial temperature
 	temp <- sa$temp
@@ -67,8 +76,14 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 	accuracies <- c(currentSolutionAccuracy)
 	iteration <- 0
 
+	if(verbose){
+	  cat("Iteration: ")
+	}
 	# start
 	while(temp>1.0){
+	  if(verbose){
+	    cat(paste(iteration, "-", sep = ""))
+	  }
 		iteration <- iteration + 1
 		# generate new solution
 		newSolution <- currentSolution
@@ -167,7 +182,12 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 		gc()
 	}
 
-	print(paste(Sys.time()," rCBA: best solution ",bestSolution,sep=""))
+	if(verbose){
+	  cat("\n")
+	  message(paste(Sys.time()," rCBA: best solution ",paste(bestSolution, collapse=", "),sep=""))
+	  message (paste("\t took:", round((proc.time() - start.time)[3], 2), " s"))
+	}
+	start.time <- proc.time()
 
 	output <- list()
 	output$iteration <- iteration
@@ -178,7 +198,12 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
 	# use best parameters
 	rules <- suppressWarnings(apriori(as(trainData, "transactions"), parameter = list(confidence = bestSolution[1], support= bestSolution[2], maxlen=bestSolution[3]), appearance = list(rhs = paste(className,unique(trainData[[className]][!is.na(trainData[[className]])]),sep="="), default="lhs"), control = list(verbose = FALSE)))
 	rulesFrame <- as(rules, "data.frame")
-	print(paste(Sys.time()," rCBA: rules ",nrow(rulesFrame),"x",ncol(rulesFrame),sep=""))
+	if(verbose){
+	  message(paste(Sys.time()," rCBA: rules ",nrow(rulesFrame),"x",ncol(rulesFrame),sep=""))
+	  message (paste("\t took:", round((proc.time() - start.time)[3], 2), " s"))
+	}
+	start.time <- proc.time()
+
 	output$initialSize <- nrow(rulesFrame)
 
 	if(pruning==TRUE && nrow(rulesFrame)>0){
@@ -194,7 +219,11 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list()){
  			})
 		}
 	}
-	print(paste(Sys.time()," rCBA: rules ",nrow(rulesFrame),"x",ncol(rulesFrame),sep=""))
+	if(verbose){
+	  message(paste(Sys.time()," rCBA: rules ",nrow(rulesFrame),"x",ncol(rulesFrame),sep=""))
+	  message (paste("\t took:", round((proc.time() - start.time)[3], 2), " s"))
+	}
+	start.time <- proc.time()
 
 	output$size <- nrow(rulesFrame)
 	output$model <- rulesFrame

@@ -34,5 +34,5 @@ rulesFrame <- as(rules,"data.frame")
 
 predictions <- rCBA::classification(train,rulesFrame)
 table(predictions)
-sum(train$Species==predictions,na.rm=TRUE)/length(predictions)
+sum(as.character(train$Species)==as.character(predictions),na.rm=TRUE)/length(predictions)
 }
