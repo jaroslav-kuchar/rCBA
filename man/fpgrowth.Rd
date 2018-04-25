@@ -33,14 +33,13 @@ train <- data.frame(train, check.names=FALSE)
 txns <- as(train,"transactions")
 
 rules = rCBA::fpgrowth(txns, support=0.03, confidence=0.03, maxLength=2, consequent="Species")
-rulesFrame <- as(rules,"data.frame")
 
-predictions <- rCBA::classification(train,rulesFrame)
+predictions <- rCBA::classification(train,rules)
 table(predictions)
 sum(as.character(train$Species)==as.character(predictions),na.rm=TRUE)/length(predictions)
 
-prunedRulesFrame <- rCBA::pruning(train, rulesFrame, method="m2cba")
-predictions <- rCBA::classification(train, prunedRulesFrame)
+prunedRules <- rCBA::pruning(train, rules, method="m2cba")
+predictions <- rCBA::classification(train, prunedRules)
 table(predictions)
 sum(as.character(train$Species)==as.character(predictions),na.rm=TRUE)/length(predictions)
 }

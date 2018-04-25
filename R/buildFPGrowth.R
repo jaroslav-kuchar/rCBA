@@ -62,13 +62,13 @@ buildFPGrowth <- function(train, className=NULL, verbose = TRUE){
   }
   J("java.lang.System")$gc()
   if(verbose){
-    message(paste(Sys.time()," rCBA: rules ",nrow(pruned),"x",ncol(pruned),sep=""))
+    message(paste(Sys.time()," rCBA: rules ",nrow(pruned),sep=""))
     message (paste("\t took:", round((proc.time() - start.time)[3], 2), " s"))
   }
   pruned$support <- as.double(pruned$support)
   pruned$confidence <- as.double(pruned$confidence)
   pruned$lift <- as.double(pruned$lift)
   output <- list()
-  output$model <- pruned
+  output$model <- frameToRules(pruned)
   output
 }

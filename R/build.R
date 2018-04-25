@@ -197,21 +197,20 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list(), verbose = TR
 
 	# use best parameters
 	rules <- suppressWarnings(apriori(as(trainData, "transactions"), parameter = list(confidence = bestSolution[1], support= bestSolution[2], maxlen=bestSolution[3]), appearance = list(rhs = paste(className,unique(trainData[[className]][!is.na(trainData[[className]])]),sep="="), default="lhs"), control = list(verbose = FALSE)))
-	rulesFrame <- as(rules, "data.frame")
 	if(verbose){
-	  message(paste(Sys.time()," rCBA: rules ",nrow(rulesFrame),"x",ncol(rulesFrame),sep=""))
+	  message(paste(Sys.time()," rCBA: rules ",length(rules),sep=""))
 	  message (paste("\t took:", round((proc.time() - start.time)[3], 2), " s"))
 	}
 	start.time <- proc.time()
 
-	output$initialSize <- nrow(rulesFrame)
+	output$initialSize <- length(rules)
 
-	if(pruning==TRUE && nrow(rulesFrame)>0){
+	if(pruning==TRUE && length(rules)>0){
 		# rulesFrame <- pruning(trainData, rulesFrame, method="m2cba")
 		repeating <- TRUE
 		while(repeating==TRUE){
 			tryCatch({
-				rulesFrame <- pruning(trainData, rulesFrame, method="m2cba", verbose = FALSE)
+			  rules <- pruning(trainData, rules, method="m2cba", verbose = FALSE)
 				repeating <- FALSE
 			},error=function(e){
 			  print(paste(e))
@@ -220,13 +219,13 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list(), verbose = TR
 		}
 	}
 	if(verbose){
-	  message(paste(Sys.time()," rCBA: rules ",nrow(rulesFrame),"x",ncol(rulesFrame),sep=""))
+	  message(paste(Sys.time()," rCBA: pruned rules ",length(rules),sep=""))
 	  message (paste("\t took:", round((proc.time() - start.time)[3], 2), " s"))
 	}
 	start.time <- proc.time()
 
-	output$size <- nrow(rulesFrame)
-	output$model <- rulesFrame
+	output$size <- length(rules)
+	output$model <- rules
 	return(output)
 }
 
@@ -257,14 +256,12 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list(), verbose = TR
 	if(is.null(rules) || length(rules)>1e5) {
 		return(-1)
 	}
-	# convert
-	rulesFrame <- as(rules, "data.frame")
 	# pruning
-	if(pruning==TRUE && nrow(rulesFrame)>0){
+	if(pruning==TRUE && length(rules)>0){
 		repeating <- TRUE
 		while(repeating==TRUE){
 			tryCatch({
-				rulesFrame <- pruning(trainSet, rulesFrame, method="m2cba", verbose = FALSE)
+			  rules <- pruning(trainSet, rules, method="m2cba", verbose = FALSE)
 				repeating <- FALSE
 			},error=function(e){
  				print("pruning exception")
@@ -272,8 +269,8 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list(), verbose = TR
 		}
 	}
 	# classification and compute accuracy
-	if(nrow(rulesFrame)>0){
-		predictions <- classification(testSet, rulesFrame, verbose = FALSE)
+	if(length(rules)>0){
+		predictions <- classification(testSet, rules, verbose = FALSE)
 		accuracy <- sum(as.character(testSet[[className]])==predictions, na.rm=TRUE) / length(predictions)
 		return(accuracy)
 	} else {

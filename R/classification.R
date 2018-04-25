@@ -16,9 +16,8 @@
 #'
 #' rules = apriori(txns, parameter=list(support=0.03, confidence=0.03, minlen=2),
 #'	appearance = list(rhs=c("Species=setosa", "Species=versicolor", "Species=virginica"),default="lhs"))
-#' rulesFrame <- as(rules,"data.frame")
 #'
-#' predictions <- rCBA::classification(train,rulesFrame)
+#' predictions <- rCBA::classification(train,rules)
 #' table(predictions)
 #' sum(as.character(train$Species)==as.character(predictions),na.rm=TRUE)/length(predictions)
 #' @include init.R
@@ -61,7 +60,7 @@ classification <- function(test, rules, verbose = TRUE){
 	rulesArray <- .jarray(lapply(rulesFrame, .jarray))
 	.jcall(jPruning,,"addRuleFrame",rulesArray)
 	if(verbose){
-	  message(paste(Sys.time()," rCBA: rules ",nrow(rules),"x",ncol(rules),sep=""))
+	  message(paste(Sys.time()," rCBA: rules ",length(rules),sep=""))
 	  message (paste("\t took:", round((proc.time() - start.time)[3], 2), " s"))
 	}
 

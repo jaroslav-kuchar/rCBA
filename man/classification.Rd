@@ -30,9 +30,8 @@ txns <- as(train,"transactions")
 
 rules = apriori(txns, parameter=list(support=0.03, confidence=0.03, minlen=2),
 appearance = list(rhs=c("Species=setosa", "Species=versicolor", "Species=virginica"),default="lhs"))
-rulesFrame <- as(rules,"data.frame")
 
-predictions <- rCBA::classification(train,rulesFrame)
+predictions <- rCBA::classification(train,rules)
 table(predictions)
 sum(as.character(train$Species)==as.character(predictions),na.rm=TRUE)/length(predictions)
 }

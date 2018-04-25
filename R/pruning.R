@@ -17,11 +17,10 @@
 #'
 #' rules = apriori(txns, parameter=list(support=0.03, confidence=0.03, minlen=2),
 #'	appearance = list(rhs=c("Species=setosa", "Species=versicolor", "Species=virginica"),default="lhs"))
-#' rulesFrame <- as(rules,"data.frame")
 #'
-#' print(nrow(rulesFrame))
-#' prunedRulesFrame <- rCBA::pruning(train, rulesFrame, method="m2cba")
-#' print(nrow(prunedRulesFrame))
+#' print(length(rules))
+#' prunedRules <- rCBA::pruning(train, rules, method="m2cba")
+#' print(length(prunedRules))
 #' @include init.R
 pruning <- function(train, rules, method="m2cba", verbose = TRUE){
 	init()
@@ -62,7 +61,7 @@ pruning <- function(train, rules, method="m2cba", verbose = TRUE){
 	rulesArray <- .jarray(lapply(rulesFrame, .jarray))
 	.jcall(jPruning,,"addRuleFrame",rulesArray)
 	if(verbose){
-	  message(paste(Sys.time()," rCBA: rules ",nrow(rules),"x",ncol(rules),sep=""))
+	  message(paste(Sys.time()," rCBA: rules ",length(rules),sep=""))
 	  message (paste("\t took:", round((proc.time() - start.time)[3], 2), " s"))
 	}
 
@@ -82,11 +81,11 @@ pruning <- function(train, rules, method="m2cba", verbose = TRUE){
 	jPruned <- NULL
 	J("java.lang.System")$gc()
 	if(verbose){
-	  message(paste(Sys.time()," rCBA: pruned rules ",nrow(pruned),"x",ncol(pruned),sep=""))
+	  message(paste(Sys.time()," rCBA: pruned rules ",nrow(pruned),sep=""))
 	  message (paste("\t took:", round((proc.time() - start.time)[3], 2), " s"))
 	}
 	pruned$support <- as.double(pruned$support)
 	pruned$confidence <- as.double(pruned$confidence)
 	pruned$lift <- as.double(pruned$lift)
-	pruned
+	frameToRules(pruned)
 }

@@ -32,9 +32,8 @@ txns <- as(train,"transactions")
 
 rules = apriori(txns, parameter=list(support=0.03, confidence=0.03, minlen=2),
 appearance = list(rhs=c("Species=setosa", "Species=versicolor", "Species=virginica"),default="lhs"))
-rulesFrame <- as(rules,"data.frame")
 
-print(nrow(rulesFrame))
-prunedRulesFrame <- rCBA::pruning(train, rulesFrame, method="m2cba")
-print(nrow(prunedRulesFrame))
+print(length(rules))
+prunedRules <- rCBA::pruning(train, rules, method="m2cba")
+print(length(prunedRules))
 }

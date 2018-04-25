@@ -8,7 +8,7 @@
 #' data("iris")
 #'
 #' output <- rCBA::buildFPGrowth(iris[sample(nrow(iris), 50),], "Species")
-#' model <- output$model
+#' model <- as(output$model,"data.frame")
 #'
 #' rules <- rCBA::frameToRules(model)
 #' inspect(rules)
