@@ -6,3 +6,5 @@ apt_packages:
   - oracle-java8-set-default
 before_script:
   - R CMD javareconf
+r_packages:
+  - devtools
