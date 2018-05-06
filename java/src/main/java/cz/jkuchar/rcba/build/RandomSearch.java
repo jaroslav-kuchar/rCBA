@@ -34,8 +34,11 @@ public class RandomSearch {
     private double cachedConfidence = 1.0;
     private int cachedLength = 1;
 
-
     public List<Rule> build(List<List<Tuple>> transactions, String consequent){
+        return this.build(transactions, consequent, true);
+    }
+
+    public List<Rule> build(List<List<Tuple>> transactions, String consequent, boolean parallel){
 
         double minSupport = Math.random();
         double minConfidence = Math.random();
@@ -47,11 +50,11 @@ public class RandomSearch {
 //        List<Integer> operations = Arrays.asList(1,2,3);
 
         // stratified split
-        splitData(transactions, consequent);
+        splitData(transactions, consequent, parallel);
         while (running){
             iterations+=1;
             // mine currentRules on train
-            State state = evaluate(minSupport, minConfidence, maxLength, consequent);
+            State state = evaluate(minSupport, minConfidence, maxLength, consequent, parallel);
             System.out.println("Final rules: "+currentRules.size());
 
             // compute accuracy on test
@@ -130,7 +133,7 @@ public class RandomSearch {
 
     }
 
-    private State evaluate(double minSupport, double minConfidence, int maxLength, String consequent){
+    private State evaluate(double minSupport, double minConfidence, int maxLength, String consequent, boolean parallel){
         System.out.println("Evaluate: "+minSupport +","+ minConfidence+","+maxLength);
 
 
@@ -150,7 +153,7 @@ public class RandomSearch {
             FPGrowth fpGrowth = new FPGrowth();
             List<FrequentPattern> fps = fpGrowth.run(train, minSupport, maxLength);
             System.out.println("Frequent patterns: "+fps.size());
-            List<Rule> rs = AssociationRules.generate(fps, fpGrowth, train.size(), minConfidence, consequent);
+            List<Rule> rs = AssociationRules.generate(fps, fpGrowth, train.size(), minConfidence, consequent, parallel);
             System.out.println("Rules: "+rs.size());
             if(rs.size()>0) {
                 Pruning pruning = new M2CBA();
@@ -185,16 +188,16 @@ public class RandomSearch {
         }
     }
 
-    private void splitData(List<List<Tuple>> transactions, String consequent){
+    private void splitData(List<List<Tuple>> transactions, String consequent, boolean parallel){
 
         // compute frequencies of classes
-        Map<String, Integer> fr = transactions.parallelStream()
+        Map<String, Integer> fr = (parallel?transactions.parallelStream():transactions.stream())
                 .map(list -> list.stream().filter(t->t.getLeft().equals(consequent)).findFirst().get().getRight())
                 .collect(Collectors.toMap(Function.identity(), v -> 1, Integer::sum));
 //        System.out.println(fr);
 
         for(String key: fr.keySet()){
-            List<List<Tuple>> filtered = transactions.parallelStream()
+            List<List<Tuple>> filtered = (parallel?transactions.parallelStream():transactions.stream())
                     .filter(list -> list.stream().filter(t->t.getLeft().equals(consequent)).findFirst().get().getRight().equals(key))
                     .collect(Collectors.toList());
             Collections.shuffle(filtered);

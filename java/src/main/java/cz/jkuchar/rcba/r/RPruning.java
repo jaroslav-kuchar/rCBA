@@ -34,6 +34,7 @@ public class RPruning {
 	private List<Item> items;
 	private String[] cNames;
 	private String[] values;
+	private boolean parallel = true;
 
 	private Map<String, Set<String>> cache;
 	
@@ -47,6 +48,11 @@ public class RPruning {
 		this.rules = new ArrayList<Rule>();
 		this.items = new ArrayList<Item>();
 		this.cache = new HashMap<String, Set<String>>();
+		this.parallel = true;
+	}
+
+	public void setParallel(boolean parallel) {
+		this.parallel = parallel;
 	}
 
 	public void setColumns(String[] cNames) {
@@ -182,7 +188,7 @@ public class RPruning {
 
 	public String[][] fpgrowth(double minSupport, double minConfidence, int maxLength, String consequent) {
 		try {
-			logger.log(Level.INFO, "FP-Growth - start");
+//			logger.log(Level.INFO, "FP-Growth - start");
 			FPGrowth fpGrowth = new FPGrowth();
 			List<List<Tuple>> t = items.stream().map(item -> {
 				List<Tuple> tuples = new ArrayList<>();
@@ -193,12 +199,12 @@ public class RPruning {
 				}
 				return tuples;
 			}).collect(Collectors.toList());
-			logger.log(Level.INFO, "FP-Growth - data converted");
+//			logger.log(Level.INFO, "FP-Growth - data converted");
 			List<FrequentPattern> fps = fpGrowth.run(t, minSupport, maxLength);
-			logger.log(Level.INFO, "FP-Growth - frequent patterns: "+fps.size());
+//			logger.log(Level.INFO, "FP-Growth - frequent patterns: "+fps.size());
 //			System.out.println(fps.size());
-			List<Rule> rules = AssociationRules.generate(fps, fpGrowth, t.size(), minConfidence, consequent);
-			logger.log(Level.INFO, "FP-Growth - rules: "+rules.size());
+			List<Rule> rules = AssociationRules.generate(fps, fpGrowth, t.size(), minConfidence, consequent, this.parallel);
+//			logger.log(Level.INFO, "FP-Growth - rules: "+rules.size());
 			return rules.stream().map(rule -> new String[]{rule.getText(), Double.toString(rule.getSupport()), Double.toString(rule.getConfidence()), Double.toString(rule.getLift())}).toArray(String[][]::new);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -218,7 +224,7 @@ public class RPruning {
 				}
 				return tuples;
 			}).collect(Collectors.toList());
-			List<Rule> rules = build.build(t, consequent);
+			List<Rule> rules = build.build(t, consequent, this.parallel);
 			return rules.stream().map(rule -> new String[]{rule.getText(), Double.toString(rule.getSupport()), Double.toString(rule.getConfidence()), Double.toString(rule.getLift())}).toArray(String[][]::new);
 		} catch (Exception e) {
 			e.printStackTrace();

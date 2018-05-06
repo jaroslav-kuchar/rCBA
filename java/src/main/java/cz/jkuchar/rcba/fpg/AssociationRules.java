@@ -16,7 +16,11 @@ public class AssociationRules {
 
 
     public static List<Rule> generate(List<FrequentPattern> fp, FPGrowth fpg, int size, double minConfidence, String consequent) {
-        Map<List<Tuple>, Integer> frequenciesMap = fp.parallelStream()
+        return AssociationRules.generate(fp, fpg, size, minConfidence, consequent, true);
+    }
+
+    public static List<Rule> generate(List<FrequentPattern> fp, FPGrowth fpg, int size, double minConfidence, String consequent, boolean parallel) {
+        Map<List<Tuple>, Integer> frequenciesMap = (parallel?fp.parallelStream():fp.stream())
                 .map(a -> {
                     // sort by content
                     Collections.sort(a.getPattern());
@@ -29,7 +33,7 @@ public class AssociationRules {
                     return(a);
                 })
                 .collect(Collectors.toMap(p -> p.getPattern(), p -> p.getMinSupportCount()));
-        return fp.parallelStream()
+        return (parallel?fp.parallelStream():fp.stream())
 //                .filter(f -> f.getPattern().stream().anyMatch(tuple -> tuple.getLeft().equals(consequent)))
                 .filter(f -> f.getPattern().get(f.getPattern().size()-1).getLeft().equals(consequent))
                 .map(f -> {

@@ -8,6 +8,7 @@
 #' @param maxLength maximum length
 #' @param consequent filter consequent - column name with consequent/target class
 #' @param verbose verbose indicator
+#' @param parallel paralle indicator
 #' @export
 #' @examples
 #' library("rCBA")
@@ -17,7 +18,8 @@
 #' train <- data.frame(train, check.names=FALSE)
 #' txns <- as(train,"transactions")
 #'
-#' rules = rCBA::fpgrowth(txns, support=0.03, confidence=0.03, maxLength=2, consequent="Species")
+#' rules = rCBA::fpgrowth(txns, support=0.03, confidence=0.03, maxLength=2, consequent="Species",
+#'            parallel=FALSE)
 #'
 #' predictions <- rCBA::classification(train,rules)
 #' table(predictions)
@@ -28,7 +30,7 @@
 #' table(predictions)
 #' sum(as.character(train$Species)==as.character(predictions),na.rm=TRUE)/length(predictions)
 #' @include init.R
-fpgrowth <- function(train, support = 0.01, confidence = 1.0, maxLength = 5, consequent=NULL, verbose = TRUE){
+fpgrowth <- function(train, support = 0.01, confidence = 1.0, maxLength = 5, consequent=NULL, verbose = TRUE, parallel=TRUE){
   init()
   if(verbose){
     message(paste(Sys.time()," rCBA: initialized",sep=""))
@@ -36,6 +38,7 @@ fpgrowth <- function(train, support = 0.01, confidence = 1.0, maxLength = 5, con
   }
   # init interface
   jPruning <- .jnew("cz/jkuchar/rcba/r/RPruning")
+  .jcall(jPruning, , "setParallel", parallel)
 
   if(is(train,"transactions")){
     # extract vars

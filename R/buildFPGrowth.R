@@ -4,13 +4,14 @@
 #' @param train \code{data.frame} or \code{transactions} from \code{arules} with input data
 #' @param className column name with the target class - default is the last column
 #' @param verbose verbose indicator
+#' @param parallel paralle indicator
 #' @return list with parameters and model as data.frame with rules
 #' @export
 #' @examples
 #' library("rCBA")
 #' data("iris")
 #'
-#' output <- rCBA::buildFPGrowth(iris[sample(nrow(iris), 50),], "Species")
+#' output <- rCBA::buildFPGrowth(iris[sample(nrow(iris), 50),], "Species", parallel=FALSE)
 #' model <- output$model
 #'
 #' predictions <- rCBA::classification(iris, model)
@@ -18,7 +19,7 @@
 #' sum(as.character(iris$Species)==as.character(predictions), na.rm=TRUE) / length(predictions)
 #'
 #' @include init.R
-buildFPGrowth <- function(train, className=NULL, verbose = TRUE){
+buildFPGrowth <- function(train, className=NULL, verbose = TRUE, parallel=TRUE){
   init()
   if(verbose){
     message(paste(Sys.time()," rCBA: initialized",sep=""))
@@ -26,6 +27,7 @@ buildFPGrowth <- function(train, className=NULL, verbose = TRUE){
   }
   # init interface
   jPruning <- .jnew("cz/jkuchar/rcba/r/RPruning")
+  .jcall(jPruning, , "setParallel", parallel)
 
   if(is(train,"transactions")){
     # extract vars

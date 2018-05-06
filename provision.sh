@@ -29,3 +29,5 @@ R -e "install.packages('rJava', repos='http://cran.rstudio.com/')"
 apt-get -y install libapparmor1 gdebi-core
 wget https://download2.rstudio.org/rstudio-server-1.1.383-amd64.deb
 gdebi --n rstudio-server-1.1.383-amd64.deb
+
+apt-get -y install maven
