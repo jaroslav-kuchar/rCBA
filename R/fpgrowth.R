@@ -25,7 +25,7 @@
 #' table(predictions)
 #' sum(as.character(train$Species)==as.character(predictions),na.rm=TRUE)/length(predictions)
 #'
-#' prunedRules <- rCBA::pruning(train, rules, method="m2cba")
+#' prunedRules <- rCBA::pruning(train, rules, method="m2cba", parallel=FALSE)
 #' predictions <- rCBA::classification(train, prunedRules)
 #' table(predictions)
 #' sum(as.character(train$Species)==as.character(predictions),na.rm=TRUE)/length(predictions)

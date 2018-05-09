@@ -11,7 +11,7 @@
 #' library("rCBA")
 #' data("iris")
 #'
-#' output <- rCBA::buildFPGrowth(iris[sample(nrow(iris), 50),], "Species", parallel=FALSE)
+#' output <- rCBA::buildFPGrowth(iris[sample(nrow(iris), 20),], "Species", parallel=FALSE)
 #' model <- output$model
 #'
 #' predictions <- rCBA::classification(iris, model)
