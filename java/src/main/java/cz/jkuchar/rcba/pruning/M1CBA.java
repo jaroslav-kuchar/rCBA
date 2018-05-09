@@ -23,6 +23,11 @@ public class M1CBA implements Pruning {
 
 	@Override
 	public List<Rule> prune(List<Rule> rules, List<Item> train) {		
+		return this.prune(rules, train, true);
+	}
+
+	@Override
+	public List<Rule> prune(List<Rule> rules, List<Item> train, boolean parallel) {
 		Collections.sort(rules);
 		List<Rule> pruned = new LinkedList<Rule>();
 
@@ -33,13 +38,11 @@ public class M1CBA implements Pruning {
 			Rule rule = rules.get(rid);
 			String className = rule.getCons().keys().iterator().next();
 			// match of antecedents
-			List<Integer> temp = IntStream.range(0, train.size()).parallel()
+			List<Integer> temp = (parallel?IntStream.range(0, train.size()).parallel():IntStream.range(0, train.size()))
 					.filter(item -> re.matchRule(rule, train.get(item)))
 					.boxed().collect(Collectors.toList());
 			// match both antecedent and consequent
-			List<Integer> marked = temp
-					.stream()
-					.parallel()
+			List<Integer> marked = (parallel?temp.parallelStream():temp.stream())
 					.filter(item -> rule.getCons().get(className).equals(train.get(item).get(className)))
 					.collect(Collectors.toList());
 
@@ -50,14 +53,14 @@ public class M1CBA implements Pruning {
 					train.remove(match);
 				}
 
-				List<String> mc = train.stream().parallel()
+				List<String> mc = (parallel?train.parallelStream():train.stream())
 						.flatMap(tr -> tr.get(className).stream())
 						.filter(s -> s!=null)
 						.collect(Collectors.toList());
 				Entry<String, Integer> mostCommon = mostCommon(mc);
 				if (mostCommon != null) {
 					Rule defaultRule = Rule.buildRule("{} => {" + className
-							+ "=" + mostCommon.getKey() + "}",
+									+ "=" + mostCommon.getKey() + "}",
 							new HashMap<String, Set<String>>() {
 								{
 									put(className,
@@ -93,12 +96,12 @@ public class M1CBA implements Pruning {
 		if (pruned.size() > 0
 				&& pruned.get(pruned.size() - 1).getDefaultRule() != null) {
 			pruned.add(pruned.get(pruned.size() - 1).getDefaultRule());
-			
-			Rule dRule = pruned.get(pruned.size()-1);			
+
+			Rule dRule = pruned.get(pruned.size()-1);
 			String className = dRule.getCons().keys().iterator().next();
-			long count = IntStream.range(0, train.size()).parallel()
+			long count = (parallel?IntStream.range(0, train.size()).parallel():IntStream.range(0, train.size()))
 					.filter(item -> dRule.getCons().get(className).equals(train.get(item).get(className)))
-					.count();						
+					.count();
 			dRule.setConfidence(count/(double)train.size());
 			dRule.setSupport(count/(double)train.size());
 		}

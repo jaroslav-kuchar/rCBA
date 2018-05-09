@@ -10,4 +10,6 @@ public interface Pruning {
 
 	public List<Rule> prune(List<Rule> rules, List<Item> train);
 
+	public List<Rule> prune(List<Rule> rules, List<Item> train, boolean parallel);
+
 }

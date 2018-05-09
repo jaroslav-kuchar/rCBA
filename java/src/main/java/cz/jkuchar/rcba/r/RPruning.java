@@ -163,7 +163,7 @@ public class RPruning {
 			break;
 		}
 		try {
-			List<Rule> results = pruning.prune(rules, items);
+			List<Rule> results = pruning.prune(rules, items, this.parallel);
 			return results.toArray(new Rule[results.size()]);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -190,6 +190,7 @@ public class RPruning {
 		try {
 //			logger.log(Level.INFO, "FP-Growth - start");
 			FPGrowth fpGrowth = new FPGrowth();
+			fpGrowth.setParallel(this.parallel);
 			List<List<Tuple>> t = items.stream().map(item -> {
 				List<Tuple> tuples = new ArrayList<>();
 				for(String key:item.keys()){

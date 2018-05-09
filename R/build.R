@@ -6,13 +6,14 @@
 #' @param pruning performing pruning while building the model
 #' @param sa simulated annealing setting. Default values: list(temp=100.0, alpha=0.05, tabuRuleLength=5, timeout=10)
 #' @param verbose verbose indicator
+#' @param parallel parallel indicator
 #' @return list with parameters and model as data.frame with rules
 #' @export
 #' @examples
 #' library("rCBA")
 #' data("iris")
 #'
-#' output <- rCBA::build(iris,sa = list(alpha=0.5)) # speeding up the cooling
+#' output <- rCBA::build(iris,sa = list(alpha=0.5), parallel=FALSE) # speeding up the cooling
 #' model <- output$model
 #'
 #' predictions <- rCBA::classification(iris, model)
@@ -20,7 +21,7 @@
 #' sum(as.character(iris$Species)==as.character(predictions), na.rm=TRUE) / length(predictions)
 #'
 #' @include init.R
-build <- function(trainData, className=NA, pruning=TRUE, sa=list(), verbose = TRUE){
+build <- function(trainData, className=NA, pruning=TRUE, sa=list(), verbose = TRUE, parallel=TRUE){
   if(verbose){
     message(paste(Sys.time()," rCBA: initialized",sep=""))
     start.time <- proc.time()
@@ -69,7 +70,7 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list(), verbose = TR
 	tabuRuleLength <- sa$tabuRuleLength
 	# current and best solution
 	currentSolution <- c(runif(1,0,1),runif(1,0,1),round(runif(1,1,min(ncol(trainData),tabuRuleLength))))
-	currentSolutionAccuracy <- .evaluate(currentSolution[1], currentSolution[2], currentSolution[3], txns, trainSet, testSet, className, pruning, sa$timeout)
+	currentSolutionAccuracy <- .evaluate(currentSolution[1], currentSolution[2], currentSolution[3], txns, trainSet, testSet, className, pruning, sa$timeout, parallel)
 	bestSolution <- currentSolution
 	bestSolutionAccuracy <- currentSolutionAccuracy
 
@@ -141,7 +142,7 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list(), verbose = TR
 			}
 		}
 		# compute accuracy
-		newSolutionAccuracy <- .evaluate(newSolution[1], newSolution[2], newSolution[3], txns, trainSet, testSet, className, pruning, sa$timeout)
+		newSolutionAccuracy <- .evaluate(newSolution[1], newSolution[2], newSolution[3], txns, trainSet, testSet, className, pruning, sa$timeout, parallel)
 
 		# if mining failed, remember rule length as max tabu value
 		if(newSolutionAccuracy<0) {
@@ -210,7 +211,7 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list(), verbose = TR
 		repeating <- TRUE
 		while(repeating==TRUE){
 			tryCatch({
-			  rules <- pruning(trainData, rules, method="m2cba", verbose = FALSE)
+			  rules <- pruning(trainData, rules, method="m2cba", verbose = FALSE, parallel)
 				repeating <- FALSE
 			},error=function(e){
 			  print(paste(e))
@@ -229,7 +230,7 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list(), verbose = TR
 	return(output)
 }
 
-.evaluate <- function(conf, supp, maxRuleLen, txns, trainSet, testSet, className, pruning, to=10){
+.evaluate <- function(conf, supp, maxRuleLen, txns, trainSet, testSet, className, pruning, to=10, parallel = TRUE){
 	# initializce
 	rules <- NULL
 	# timeout limit
@@ -261,7 +262,7 @@ build <- function(trainData, className=NA, pruning=TRUE, sa=list(), verbose = TR
 		repeating <- TRUE
 		while(repeating==TRUE){
 			tryCatch({
-			  rules <- pruning(trainSet, rules, method="m2cba", verbose = FALSE)
+			  rules <- pruning(trainSet, rules, method="m2cba", verbose = FALSE, parallel)
 				repeating <- FALSE
 			},error=function(e){
  				print("pruning exception")

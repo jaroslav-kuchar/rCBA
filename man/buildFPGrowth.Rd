@@ -13,7 +13,7 @@ buildFPGrowth(train, className = NULL, verbose = TRUE, parallel = TRUE)
 
 \item{verbose}{verbose indicator}
 
-\item{parallel}{paralle indicator}
+\item{parallel}{parallel indicator}
 }
 \value{
 list with parameters and model as data.frame with rules

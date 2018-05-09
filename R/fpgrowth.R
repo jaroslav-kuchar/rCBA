@@ -8,7 +8,7 @@
 #' @param maxLength maximum length
 #' @param consequent filter consequent - column name with consequent/target class
 #' @param verbose verbose indicator
-#' @param parallel paralle indicator
+#' @param parallel parallel indicator
 #' @export
 #' @examples
 #' library("rCBA")

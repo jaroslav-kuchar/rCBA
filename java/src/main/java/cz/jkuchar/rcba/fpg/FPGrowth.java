@@ -34,6 +34,16 @@ public class FPGrowth {
 
     private static Logger logger = Logger.getLogger(FPGrowth.class.getName());
 
+    private boolean parallel;
+
+    public FPGrowth(){
+        this.parallel = true;
+    }
+
+    public void setParallel(boolean parallel){
+        this.parallel = parallel;
+    }
+
     /*
     build a tree
      */
@@ -311,7 +321,7 @@ public class FPGrowth {
 
     protected Map<Tuple, Integer> computeFrequencies(List<List<Tuple>> transactions, int minSupportCount){
         // compute frequencies of items
-        Map<Tuple, Integer> fr = transactions.parallelStream().flatMap(list -> list.stream()).collect(Collectors.toMap(w -> w, w -> w.getCount(), Integer::sum));
+        Map<Tuple, Integer> fr = (this.parallel?transactions.parallelStream():transactions.stream()).flatMap(list -> list.stream()).collect(Collectors.toMap(w -> w, w -> w.getCount(), Integer::sum));
         // filter out infrequent
         fr = fr.entrySet().stream().filter(es -> es.getValue()>= minSupportCount).collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
         return fr;

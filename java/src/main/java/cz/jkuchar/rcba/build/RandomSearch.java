@@ -151,6 +151,7 @@ public class RandomSearch {
 
         Future<List<Rule>> task = executorService.submit(() -> {
             FPGrowth fpGrowth = new FPGrowth();
+            fpGrowth.setParallel(parallel);
             List<FrequentPattern> fps = fpGrowth.run(train, minSupport, maxLength);
             System.out.println("Frequent patterns: "+fps.size());
             List<Rule> rs = AssociationRules.generate(fps, fpGrowth, train.size(), minConfidence, consequent, parallel);

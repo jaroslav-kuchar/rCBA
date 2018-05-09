@@ -4,6 +4,7 @@
 #' @param rules \code{data.frame} with rules
 #' @param method pruning method m2cba(default)|m1cba|dcbrcba
 #' @param verbose verbose indicator
+#' @param parallel parallel indicator
 #' @return \code{data.frame} with pruned rules
 #' @export
 #' @examples
@@ -19,10 +20,10 @@
 #'	appearance = list(rhs=c("Species=setosa", "Species=versicolor", "Species=virginica"),default="lhs"))
 #'
 #' print(length(rules))
-#' prunedRules <- rCBA::pruning(train, rules, method="m2cba")
+#' prunedRules <- rCBA::pruning(train, rules, method="m2cba", parallel=FALSE)
 #' print(length(prunedRules))
 #' @include init.R
-pruning <- function(train, rules, method="m2cba", verbose = TRUE){
+pruning <- function(train, rules, method="m2cba", verbose = TRUE, parallel=TRUE){
 	init()
   if(verbose){
 	  message(paste(Sys.time()," rCBA: initialized",sep=""))
@@ -30,6 +31,7 @@ pruning <- function(train, rules, method="m2cba", verbose = TRUE){
   }
 	# init interface
 	jPruning <- .jnew("cz/jkuchar/rcba/r/RPruning")
+	.jcall(jPruning, , "setParallel", parallel)
 
 	if(is(train,"transactions")){
 	  # extract vars

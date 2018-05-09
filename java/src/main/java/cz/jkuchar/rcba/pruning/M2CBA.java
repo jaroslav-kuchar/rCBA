@@ -35,6 +35,11 @@ public class M2CBA implements Pruning {
 
 	@Override
 	public List<Rule> prune(List<Rule> rules, List<Item> train) {
+		return this.prune(rules, train, true);
+	}
+
+	@Override
+	public List<Rule> prune(List<Rule> rules, List<Item> train, boolean parallel) {
 		rules = new ArrayList<Rule>(rules);
 		// sort rules
 		Collections.sort(rules);
@@ -50,11 +55,11 @@ public class M2CBA implements Pruning {
 
 		// stages
 //		long startTime = System.nanoTime();
-		stage1(rules, train);
+		stage1(rules, train, parallel);
 //		logger.debug("Stage1: " + (System.nanoTime() - startTime) / 1000000 + " ms");
-		stage2(rules, train);
+		stage2(rules, train, parallel);
 //		logger.debug("Stage2: " + (System.nanoTime() - startTime) / 1000000 + " ms");
-		stage3(rules, train);
+		stage3(rules, train, parallel);
 //		logger.debug("Stage3: " + (System.nanoTime() - startTime) / 1000000 + " ms");
 
 		// // debug print
@@ -71,8 +76,8 @@ public class M2CBA implements Pruning {
 	/*
 	 * STAGE 1
 	 */
-	private void stage1(List<Rule> rules, List<Item> train) {
-		IntStream.range(0, train.size()).parallel().forEach(did -> {
+	private void stage1(List<Rule> rules, List<Item> train, boolean parallel) {
+		(parallel?IntStream.range(0, train.size()).parallel():IntStream.range(0, train.size())).forEach(did -> {
 			Item item = train.get(did);
 			String itemClassValue = item.get(className).get(0);
 
@@ -188,7 +193,7 @@ public class M2CBA implements Pruning {
 	/*
 	 * STAGE 2
 	 */
-	private void stage2(List<Rule> rules, List<Item> train) {
+	private void stage2(List<Rule> rules, List<Item> train, boolean parallel) {
 		A.stream().forEach(aset -> {
 			if (rules.get(aset.wRule).isMarked()) {
 				rules.get(aset.cRule).decClassCasesCovered(aset.dclass);
@@ -208,7 +213,7 @@ public class M2CBA implements Pruning {
 		});
 	}
 
-	private void stage3(List<Rule> rules, List<Item> train) {
+	private void stage3(List<Rule> rules, List<Item> train, boolean parallel) {
 		/*
 		 * STAGE 3
 		 */
@@ -216,10 +221,10 @@ public class M2CBA implements Pruning {
 		int minErroValue = train.size();
 		int minErrorRid = 0;
 		int ruleErrors = 0;
-		Map<String, Integer> classDistr = train.parallelStream().flatMap(tr -> tr.get(className).stream())
+		Map<String, Integer> classDistr = (parallel?train.parallelStream():train.stream()).flatMap(tr -> tr.get(className).stream())
 				.filter(s -> s!=null)
 				.collect(Collectors.toList()).stream().collect(Collectors.toMap(s -> s, s -> 1, Integer::sum));
-		List<Integer> QQ = Q.parallelStream().distinct().collect(Collectors.toList());
+		List<Integer> QQ = (parallel?Q.parallelStream():Q.stream()).distinct().collect(Collectors.toList());
 		Collections.sort(QQ);
 		for (int rid : QQ) {
 			if (rules.get(rid).getClassCasesCovered().containsKey(rules.get(rid).getCons().get(className).get(0))
@@ -267,7 +272,7 @@ public class M2CBA implements Pruning {
 
 			Rule dRule = C.get(C.size() - 1);
 			String className = dRule.getCons().keys().get(0);
-			long count = IntStream.range(0, train.size()).parallel()
+			long count = (parallel?IntStream.range(0, train.size()).parallel():IntStream.range(0, train.size()))
 					.filter(item -> train.get(item).get(className).contains(dRule.getCons().get(className).get(0))).count();
 			double tmp = count / (double) train.size();
 			dRule.setConfidence(tmp);

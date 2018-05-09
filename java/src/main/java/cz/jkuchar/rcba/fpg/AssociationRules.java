@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
  */
 public class AssociationRules {
 
-
     public static List<Rule> generate(List<FrequentPattern> fp, FPGrowth fpg, int size, double minConfidence, String consequent) {
         return AssociationRules.generate(fp, fpg, size, minConfidence, consequent, true);
     }

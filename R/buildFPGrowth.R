@@ -4,7 +4,7 @@
 #' @param train \code{data.frame} or \code{transactions} from \code{arules} with input data
 #' @param className column name with the target class - default is the last column
 #' @param verbose verbose indicator
-#' @param parallel paralle indicator
+#' @param parallel parallel indicator
 #' @return list with parameters and model as data.frame with rules
 #' @export
 #' @examples

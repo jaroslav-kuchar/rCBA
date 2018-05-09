@@ -20,7 +20,7 @@ fpgrowth(train, support = 0.01, confidence = 1, maxLength = 5,
 
 \item{verbose}{verbose indicator}
 
-\item{parallel}{paralle indicator}
+\item{parallel}{parallel indicator}
 }
 \description{
 FP-Growth algorithm - Jiawei Han, Jian Pei, and Yiwen Yin.
