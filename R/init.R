@@ -8,9 +8,9 @@
 .onLoad <- function(libname, pkgname ){
   .jinit()
   jv <- .jcall("java/lang/System", "S", "getProperty", "java.runtime.version")
-  if(substr(jv, 1L, 1L) == "1") {
+  if(substr(jv, 1L, 2L) == "1.") {
     jvn <- as.numeric(paste0(strsplit(jv, "[.]")[[1L]][1:2], collapse = "."))
-    if(jvn < 1.8) stop("Java 8 is needed for this package but not available")
+    if(jvn < 1.8) stop("Java >= 8 is needed for this package but not available")
   }
 }
 
@@ -18,9 +18,9 @@ init <- function(){
 	# initialize rJava
   .jinit()
   jv <- .jcall("java/lang/System", "S", "getProperty", "java.runtime.version")
-  if(substr(jv, 1L, 1L) == "1") {
+  if(substr(jv, 1L, 2L) == "1.") {
     jvn <- as.numeric(paste0(strsplit(jv, "[.]")[[1L]][1:2], collapse = "."))
-    if(jvn < 1.8) stop("Java 8 is needed for this package but not available")
+    if(jvn < 1.8) stop("Java >= 8 is needed for this package but not available")
   }
 	# add java implementation to classpath
 	.jaddClassPath(dir(paste(path.package("rCBA"), "/java/", sep=""), full.names=TRUE))

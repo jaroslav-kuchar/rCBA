@@ -1,6 +1,6 @@
 Package: rCBA
 Title: CBA Classifier for R
-Version: 0.4.1
+Version: 0.4.2
 Authors@R: c(person("Jaroslav", "Kuchar", email = "jaroslav.kuchar@gmail.com", role = c("aut", "cre")),
              person("Tomas", "Kliegr", email="kliegr@gmail.com", role = c("ctb")))
 Author: Jaroslav Kuchar [aut, cre], Tomas Kliegr [ctb]
