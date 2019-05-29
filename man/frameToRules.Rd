@@ -17,10 +17,11 @@ Conversion of \code{data.frame} to \code{rules} from \code{arules}
 }
 \examples{
 library("rCBA")
-data("iris")
 
-output <- rCBA::buildFPGrowth(iris[sample(nrow(iris), 20),], "Species", parallel=FALSE)
-model <- as(output$model,"data.frame")
+model <- data.frame("rules" = c("{X=1} => {Y=1}","{X=0} => {Y=0}"),
+                    "support" = c(0.5,0.5),
+                    "confidence" = c(0.5,0.5),
+                    "lift" = c(1.0,1.0))
 
 rules <- rCBA::frameToRules(model)
 inspect(rules)
