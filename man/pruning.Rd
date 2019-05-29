@@ -4,7 +4,8 @@
 \alias{pruning}
 \title{A Pruning function}
 \usage{
-pruning(train, rules, method = "m2cba", verbose = TRUE, parallel = TRUE)
+pruning(train, rules, method = "m2cba", verbose = TRUE,
+  parallel = TRUE)
 }
 \arguments{
 \item{train}{trainData \code{data.frame} or \code{transactions} from \code{arules} with input data}

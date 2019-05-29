@@ -4,7 +4,8 @@
 \alias{buildFPGrowth}
 \title{Build classifier function (FP-Growth-based)}
 \usage{
-buildFPGrowth(train, className = NULL, verbose = TRUE, parallel = TRUE)
+buildFPGrowth(train, className = NULL, verbose = TRUE,
+  parallel = TRUE)
 }
 \arguments{
 \item{train}{\code{data.frame} or \code{transactions} from \code{arules} with input data}

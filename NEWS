@@ -1,3 +1,12 @@
+rCBA 0.4.3 (Release date: 2019-05-29)
+==============
+
+Changes:
+
+* Fixed issues with the Java dependency, RNG
+* Udpdates of the documentation
+
+
 rCBA 0.4.2 (Release date: 2018-05-16)
 ==============
 
